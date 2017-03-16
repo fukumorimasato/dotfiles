@@ -60,15 +60,26 @@ zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'c
 #
 #  aliase
 #
-alias ls="ls -F --color=auto"
+
+# for ls
+alias ls="ls -FG" 
 alias l="ls -t"
 alias ll="ls -l"
 alias la="ls -a"
 alias lst="ls -ltr"
 alias lla="ls -la"
 
+# for cd
 alias ...="cd ../../"
 alias ....="cd ../../../"
+
+# for git
+alias ga="git add -p"
+alias gcm="git commit"
+alias gs="git status"
+alias gf="git fetch"
+alias gd="git diff"
+alias gdc="git diff --cached"
 
 #
 #  zplug setting

@@ -2,23 +2,6 @@
 #  @file .zshrc
 #
 
-source ~/.zplug/init.zsh
-
-zplug "wbinglee/zsh-wakatime"
-
-# syntax
-zplug "chrissicool/zsh-256color"
-zplug "Tarrasch/zsh-colors"
-zplug "zsh-users/zsh-syntax-highlighting"
-zplug "ascii-soup/zsh-url-highlighter"
-
-# program
-zplug "voronkovich/mysql.plugin.zsh"
-
-# tools
-zplug "marzocchi/zsh-notify"
-zplug "oknowton/zsh-dwim"
-
 # emacsライクな操作を行う
 bindkey -e
 
@@ -37,6 +20,18 @@ colors
 HOST=`hostname`
 PROMPT="[${fg[yellow]}%n@%m${reset_color} ${fg[green]}%c${reset_color}]$ "
 
+# Ctrl+rでヒストリーのインクリメンタルサーチ、Ctrl+sで逆順
+bindkey '^r' history-incremental-pattern-search-backward
+bindkey '^s' history-incremental-pattern-search-forward
+
+# コマンドを途中まで入力後、historyから絞り込み
+# 例 ls まで打ってCtrl+pでlsコマンドをさかのぼる、Ctrl+bで逆順
+autoload -Uz history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "^p" history-beginning-search-backward-end
+bindkey "^b" history-beginning-search-forward-end
+
 #
 # setting for ls command
 #
@@ -52,11 +47,40 @@ alias ls="ls -F --color=auto"
 alias l="ls -t"
 alias ll="ls -l"
 alias la="ls -a"
-alias lts="ls -lts"
+alias lst="ls -ltr"
 alias lla="ls -la"
 
 alias ...="cd ../../"
 alias ....="cd ../../../"
 
+#
+#  zplug setting
+#
+source ~/.zplug/init.zsh
+
+zplug "wbinglee/zsh-wakatime"
+
+# syntax
+zplug "chrissicool/zsh-256color"
+zplug "Tarrasch/zsh-colors"
+zplug "zsh-users/zsh-syntax-highlighting", defer:2
+zplug "ascii-soup/zsh-url-highlighter"
+
+# program
+zplug "voronkovich/mysql.plugin.zsh"
+
+# tools
+zplug "marzocchi/zsh-notify"
+zplug "oknowton/zsh-dwim"
 
 
+# Install plugins if there are plugins that have not been installed
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
+
+# Then, source plugins and add commands to $PATH
+zplug load --verbose

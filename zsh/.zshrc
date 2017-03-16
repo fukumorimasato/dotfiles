@@ -48,7 +48,7 @@ zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'c
 #
 #  aliase
 #
-alias ls="ls --color=auto"
+alias ls="ls -F --color=auto"
 alias l="ls -t"
 alias ll="ls -l"
 alias la="ls -a"

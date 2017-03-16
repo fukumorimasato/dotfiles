@@ -36,6 +36,3 @@ colors
 #  : zshrcで設定を行う
 HOST=`hostname`
 PROMPT="[${fg[yellow]}%n@%m${reset_color} ${fg[green]}%c${reset_color}]$ "
-
-# alias 
-source ~/dotfiles/zsh/aliases.zsh

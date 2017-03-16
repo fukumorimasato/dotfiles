@@ -37,6 +37,19 @@ autoload -Uz add-zsh-hock
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 
 #
+#  setting for peco
+#
+function peco-history-selection() {
+    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
+
+zle -N peco-history-selection
+bindkey '^R' peco-history-selection
+
+
+#
 # setting for ls command
 #
 export LSCOLORS=exfxcxdxbxegedabagacad

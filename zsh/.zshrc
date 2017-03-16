@@ -120,6 +120,6 @@ fi
 zplug load --verbose
 
 # for cd
-zplug "b4b4r07/enhancd", use:enhancd.sh
+zplug "b4b4r07/enhancd", use:init.sh
 
 zplug "zsh-users/zsh-completions"

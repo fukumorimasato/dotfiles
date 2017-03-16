@@ -32,6 +32,10 @@ zle -N history-beginning-search-forward-end history-search-end
 bindkey "^p" history-beginning-search-backward-end
 bindkey "^b" history-beginning-search-forward-end
 
+## cdr
+autoload -Uz add-zsh-hock
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+
 #
 # setting for ls command
 #
@@ -72,6 +76,12 @@ zplug "voronkovich/mysql.plugin.zsh"
 # tools
 zplug "marzocchi/zsh-notify"
 zplug "oknowton/zsh-dwim"
+
+# peco
+zplug "peco/peco", as:command, from:gh-r
+
+# fzf-tmux の peco バージョン
+zplug "b4b4r07/dotfiles", as:command, use:bin/peco-tmux
 
 
 # Install plugins if there are plugins that have not been installed

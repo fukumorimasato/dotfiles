@@ -118,3 +118,8 @@ fi
 
 # Then, source plugins and add commands to $PATH
 zplug load --verbose
+
+# for cd
+zplug "b4b4r07/enhancd", use:enhancd.sh
+
+zplug "zsh-users/zsh-completions"

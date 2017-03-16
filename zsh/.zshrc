@@ -7,7 +7,7 @@ bindkey -e
 
 # 自動補完有効
 autoload -U compinit
-compinit
+compinit -u
 
 # 色指定有効 
 #  : ${fg[色指定]}と${reset_color}で色指定が可能になる

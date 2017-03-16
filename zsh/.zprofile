@@ -1,9 +1,6 @@
-# 補完機能
-autoload -U compinit
-compinit -u
-
-# prompt
-PROMPT='%F{green}%c%f $ '
+#
+#  @file .zprofile
+#
 
 # コマンド履歴
 HISTFILE=~/.zsh_history
@@ -87,4 +84,4 @@ function tmux_automatically_attach_session()
         fi
     fi
 }
-tmux_automatically_attach_session
+# tmux_automatically_attach_session

@@ -37,19 +37,6 @@ autoload -Uz add-zsh-hock
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 
 #
-#  setting for peco
-#
-function peco-history-selection() {
-    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
-    CURSOR=$#BUFFER
-    zle reset-prompt
-}
-
-zle -N peco-history-selection
-bindkey '^R' peco-history-selection
-
-
-#
 # setting for ls command
 #
 export LSCOLORS=exfxcxdxbxegedabagacad
@@ -99,27 +86,45 @@ zplug "voronkovich/mysql.plugin.zsh"
 
 # tools
 zplug "marzocchi/zsh-notify"
-zplug "oknowton/zsh-dwim"
 
 # peco
-zplug "peco/peco", as:command, from:gh-r
+zplug "peco/peco", as:command, from:gh-r, use:"*amd64*"
 
 # fzf-tmux の peco バージョン
 zplug "b4b4r07/dotfiles", as:command, use:bin/peco-tmux
-
-
-# Install plugins if there are plugins that have not been installed
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
-fi
-
-# Then, source plugins and add commands to $PATH
-zplug load --verbose
 
 # for cd
 zplug "b4b4r07/enhancd", use:enhancd.sh
 
 zplug "zsh-users/zsh-completions"
+
+# Install plugins if there are plugins that have not been installed
+if ! zplug check --verbose; then
+    echo; zplug install
+fi
+
+# Then, source plugins and add commands to $PATH
+zplug load --verbose
+
+#
+#  setting for peco
+#
+function peco-history-selection() {
+
+    case ${OSTYPE} in
+        darwin*)
+        # setting for mac
+        BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+        ;;
+    linux*)
+        # setting for linux
+        BUFFER=`history -n 1 | tac  | awk '!a[$0]++' | peco`
+        ;;
+    esac
+
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
+
+zle -N peco-history-selection
+bindkey '^R' peco-history-selection

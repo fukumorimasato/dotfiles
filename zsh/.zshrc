@@ -47,7 +47,16 @@ zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'c
 #
 
 # for ls
-alias ls="ls -FG" 
+case ${OSTYPE} in
+    darwin*)
+    # setting for mac
+    alias ls="ls -FG" 
+    ;;
+    linux*)
+    # setting for linux
+    alias ls="ls -F --color=auto" 
+    ;;
+esac
 alias l="ls -t"
 alias ll="ls -l"
 alias la="ls -a"

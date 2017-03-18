@@ -20,10 +20,6 @@ colors
 HOST=`hostname`
 PROMPT="[${fg[yellow]}%n@%m${reset_color} ${fg[green]}%c${reset_color}]$ "
 
-# Ctrl+rでヒストリーのインクリメンタルサーチ、Ctrl+sで逆順
-bindkey '^r' history-incremental-pattern-search-backward
-bindkey '^s' history-incremental-pattern-search-forward
-
 # コマンドを途中まで入力後、historyから絞り込み
 # 例 ls まで打ってCtrl+pでlsコマンドをさかのぼる、Ctrl+bで逆順
 autoload -Uz history-search-end
@@ -118,7 +114,6 @@ zplug load --verbose
 
 # for cd
 zplug "b4b4r07/enhancd", use:init.sh
-=======
 #
 #  setting for peco
 #

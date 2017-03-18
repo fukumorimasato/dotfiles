@@ -29,25 +29,10 @@ bindkey '^s' history-incremental-pattern-search-forward
 autoload -Uz history-search-end
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
-bindkey "^p" history-beginning-search-backward-end
-bindkey "^b" history-beginning-search-forward-end
 
 ## cdr
 autoload -Uz add-zsh-hock
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-
-#
-#  setting for peco
-#
-function peco-history-selection() {
-    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
-    CURSOR=$#BUFFER
-    zle reset-prompt
-}
-
-zle -N peco-history-selection
-bindkey '^R' peco-history-selection
-
 
 #
 # setting for ls command
@@ -62,7 +47,16 @@ zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'c
 #
 
 # for ls
-alias ls="ls -FG" 
+case ${OSTYPE} in
+    darwin*)
+    # setting for mac
+    alias ls="ls -FG" 
+    ;;
+    linux*)
+    # setting for linux
+    alias ls="ls -F --color=auto" 
+    ;;
+esac
 alias l="ls -t"
 alias ll="ls -l"
 alias la="ls -a"
@@ -80,6 +74,9 @@ alias gs="git status"
 alias gf="git fetch"
 alias gd="git diff"
 alias gdc="git diff --cached"
+
+# for tmux
+alias t="tmax a || tmux"
 
 #
 #  zplug setting
@@ -99,21 +96,21 @@ zplug "voronkovich/mysql.plugin.zsh"
 
 # tools
 zplug "marzocchi/zsh-notify"
-zplug "oknowton/zsh-dwim"
 
 # peco
-zplug "peco/peco", as:command, from:gh-r
+zplug "peco/peco", as:command, from:gh-r, use:"*amd64*"
 
 # fzf-tmux の peco バージョン
 zplug "b4b4r07/dotfiles", as:command, use:bin/peco-tmux
 
+# for cd
+zplug "b4b4r07/enhancd", use:enhancd.sh
+
+zplug "zsh-users/zsh-completions"
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
+    echo; zplug install
 fi
 
 # Then, source plugins and add commands to $PATH
@@ -121,5 +118,26 @@ zplug load --verbose
 
 # for cd
 zplug "b4b4r07/enhancd", use:init.sh
+=======
+#
+#  setting for peco
+#
+function peco-history-selection() {
 
-zplug "zsh-users/zsh-completions"
+    case ${OSTYPE} in
+        darwin*)
+        # setting for mac
+        BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+        ;;
+    linux*)
+        # setting for linux
+        BUFFER=`history -n 1 | tac  | awk '!a[$0]++' | peco`
+        ;;
+    esac
+
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
+
+zle -N peco-history-selection
+bindkey '^R' peco-history-selection

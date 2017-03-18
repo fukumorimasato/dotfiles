@@ -100,7 +100,7 @@ zplug "peco/peco", as:command, from:gh-r, use:"*amd64*"
 zplug "b4b4r07/dotfiles", as:command, use:bin/peco-tmux
 
 # for cd
-zplug "b4b4r07/enhancd", use:enhancd.sh
+zplug "b4b4r07/enhancd", use:init.sh
 
 zplug "zsh-users/zsh-completions"
 

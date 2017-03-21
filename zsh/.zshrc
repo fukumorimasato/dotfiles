@@ -39,7 +39,7 @@ export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46
 zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
 
 #
-#  aliase
+#  aliases
 #
 
 # for ls
@@ -74,6 +74,12 @@ alias gdc="git diff --cached"
 # for tmux
 alias t="tmax a || tmux"
 
+# for pipe
+alias T="| tail"
+alias L="| less"
+alias F="| fzf"
+alias P="| peco"
+
 #
 #  zplug setting
 #
@@ -104,6 +110,15 @@ zplug "b4b4r07/enhancd", use:init.sh
 
 zplug "zsh-users/zsh-completions"
 
+# anyframe
+zplug "mollifier/anyframe"
+
+zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
+zplug "junegunn/fzf", as:command, use:bin/fzf-tmu
+
+# for cd
+zplug "b4b4r07/enhancd", use:init.sh
+
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
     echo; zplug install
@@ -112,21 +127,39 @@ fi
 # Then, source plugins and add commands to $PATH
 zplug load --verbose
 
-# for cd
-zplug "b4b4r07/enhancd", use:init.sh
+available () {
+    local x candidates
+    candidates="$1:"
+    while [ -n "$candidates" ]
+    do
+        x=${candidates%%:*}
+        candidates=${candidates#*:}
+        if type "$x" >/dev/null 2>&1; then
+            echo "$x"
+            return 0
+        else
+            continue
+        fi
+    done
+    return 1
+}
+zle -N available
+
+FILTER="peco:fzf"
+
 #
-#  setting for peco
+#  setting for fuzy serch tool
 #
-function peco-history-selection() {
+function history-selection() {
 
     case ${OSTYPE} in
         darwin*)
         # setting for mac
-        BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+        BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | \`available ${FILTER}\``
         ;;
     linux*)
         # setting for linux
-        BUFFER=`history -n 1 | tac  | awk '!a[$0]++' | peco`
+        BUFFER=`history -n 1 | tac  | awk '!a[$0]++' | \`available ${FILTER}\``
         ;;
     esac
 
@@ -134,5 +167,20 @@ function peco-history-selection() {
     zle reset-prompt
 }
 
-zle -N peco-history-selection
-bindkey '^R' peco-history-selection
+zle -N history-selection
+bindkey '^R' history-selection
+
+#
+#  colered man page
+#
+man() {
+        env \
+                LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+                LESS_TERMCAP_md=$(printf "\e[1;31m") \
+                LESS_TERMCAP_me=$(printf "\e[0m") \
+                LESS_TERMCAP_se=$(printf "\e[0m") \
+                LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+                LESS_TERMCAP_ue=$(printf "\e[0m") \
+                LESS_TERMCAP_us=$(printf "\e[1;32m") \
+                man "$@"
+}

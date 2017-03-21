@@ -17,6 +17,9 @@ export LC_ALL=en_US.UTF-8
 export PATH=/usr/local/bin:$PATH
 export PATH=$PATH:/opt/tools/
 
+# for fzf
+export FZF_DEFAULT_OPTS="--ansi --reverse --select-1 --exit-0"
+
 # コマンドミスを修正
 setopt correct
 

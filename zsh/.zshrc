@@ -75,10 +75,10 @@ alias gdc="git diff --cached"
 alias t="tmax a || tmux"
 
 # for pipe
-alias T="| tail"
-alias L="| less"
-alias F="| fzf"
-alias P="| peco"
+alias -g T='| tail'
+alias -g L='| less'
+alias -g F='| fzf'
+alias -g P='| peco'
 
 #
 #  zplug setting

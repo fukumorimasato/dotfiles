@@ -14,6 +14,7 @@ export LANG=ja_JP.UTF-8
 export LESSCHARSET=dos
 export LC_ALL=en_US.UTF-8
 
+export PATH="/Applications/anaconda/bin:$PATH"
 export PATH=/usr/local/bin:$PATH
 export PATH=$PATH:/opt/tools/
 

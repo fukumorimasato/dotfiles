@@ -21,6 +21,9 @@ export PATH=$PATH:/opt/tools/
 # for fzf
 export FZF_DEFAULT_OPTS="--ansi --reverse --select-1 --exit-0"
 
+# for enhancd
+export ENHANCD_FILTER=peco:fzf
+
 # コマンドミスを修正
 setopt correct
 

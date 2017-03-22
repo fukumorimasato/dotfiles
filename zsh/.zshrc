@@ -72,7 +72,7 @@ alias gd="git diff"
 alias gdc="git diff --cached"
 
 # for tmux
-alias t="tmax a || tmux"
+alias t="tmux a || tmux"
 
 # for pipe
 alias -g T='| tail'

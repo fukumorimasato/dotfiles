@@ -80,6 +80,24 @@ alias -g L='| less'
 alias -g F='| fzf'
 alias -g P='| peco'
 
+# for extract
+function extract() {
+  case $1 in
+    *.tar.gz|*.tgz) tar xzvf $1;;
+    *.tar.xz) tar Jxvf $1;;
+    *.zip) unzip $1;;
+    *.lzh) lha e $1;;
+    *.tar.bz2|*.tbz) tar xjvf $1;;
+    *.tar.Z) tar zxvf $1;;
+    *.gz) gzip -d $1;;
+    *.bz2) bzip2 -dc $1;;
+    *.Z) uncompress $1;;
+    *.tar) tar xvf $1;;
+    *.arj) unarj $1;;
+  esac
+}
+alias -s {gz,tgz,zip,lzh,bz2,tbz,Z,tar,arj,xz}=extract
+
 #
 #  zplug setting
 #
@@ -100,7 +118,7 @@ zplug "voronkovich/mysql.plugin.zsh"
 zplug "marzocchi/zsh-notify"
 
 # peco
-zplug "peco/peco", as:command, from:gh-r, use:"*amd64*"
+zplug "peco/peco", as:command, from:gh-r
 
 # fzf-tmux の peco バージョン
 zplug "b4b4r07/dotfiles", as:command, use:bin/peco-tmux
@@ -127,7 +145,7 @@ fi
 # Then, source plugins and add commands to $PATH
 zplug load --verbose
 
-available () {
+function available () {
     local x candidates
     candidates="$1:"
     while [ -n "$candidates" ]
@@ -169,6 +187,58 @@ function history-selection() {
 
 zle -N history-selection
 bindkey '^R' history-selection
+
+if [ -x "`which ag`" ]; then
+    function peco-ag () {
+	# ag $@ | peco --query "$LBUFFER" | awk -F : '{print "+" $2 " " $1}'
+	emacs $(ag $@ | peco --query "$LBUFFER" | awk -F : '{print "+" $2 " " $1}')
+    }
+    zle -N peco-ag
+
+    function file-serch-emacs () {
+	if [ $# ] && [ -f $@ ]; then 
+	    emacs $@
+	elif [ $# ] && [ -d $@ ]; then
+	    emacs $(ag -l . $@ | peco)
+	else
+	    emacs
+	fi
+    }
+    zle -N file-serch-emacs
+    alias fsemcs="file-serch-emacs"
+fi
+
+function diary() {
+
+    dhome="$HOME/diary"
+    year=$(date +"%Y")
+    month=$(date +"%m")
+    day=$(date +"%d")
+    
+    ddir="${dhome}/${year}/${month}/${day}"
+    dfile="${year}${month}${day}_$(whoami).diary"
+
+    if [ ! -d $ddir ]; then
+	mkdir -p $ddir
+    fi
+
+    if [ ! -e $ddir/$dfile ]; then
+	echo -e "#=============================================" >> $ddir/$dfile
+	echo -e "# data   : $(date +\"%Y%m%d\")                " >> $ddir/$dfile
+	echo -e "# author : $(whoami)                          " >> $ddir/$dfile
+	echo -e "#=============================================" >> $ddir/$dfile
+	echo -e "                                              " >> $ddir/$dfile
+	echo -e "                                              " >> $ddir/$dfile
+	echo -e "                                              " >> $ddir/$dfile
+	echo -e "#=============================================" >> $ddir/$dfile
+	echo -e "# End Of File                                 " >> $ddir/$dfile
+	echo -e "#=============================================" >> $ddir/$dfile
+    fi
+
+    emacs $ddir/$dfile
+
+}
+zle -N diary
 
 #
 #  colered man page

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#===========================================
+#
+#  @file log-tmux
+#
+#===========================================
+
+DATE=`date "+%Y-%m-%d"`
+LOG_DIR=$HOME/logs/tmux/$DATE
+LOG_FILE=$LOG_DIR/tmux-$DATE-$1.log
+mkdir -p $LOG_DIR
+#tmux display-message "Started logging to $LOG_FILE"
+
+#echo $2 >> $LOG_FILE
+#cat $(date +%Y-%m-%d:%H:%M:%S:%N) >> $LOG_FILE
+cat | awk '{print strftime("[%Y-%m-%d %H:%M:%S]"), $0}' >> $LOG_FILE
+#cat >> $LOG_FILE
+
+
+#===========================================
+#		   EOF
+#===========================================
+

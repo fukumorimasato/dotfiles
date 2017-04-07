@@ -71,9 +71,6 @@ alias gf="git fetch"
 alias gd="git diff"
 alias gdc="git diff --cached"
 
-# for tmux
-alias t="tmux a || tmux"
-
 # for pipe
 alias -g T='| tail'
 alias -g L='| less'
@@ -254,3 +251,22 @@ man() {
                 LESS_TERMCAP_us=$(printf "\e[1;32m") \
                 man "$@"
 }
+
+#
+#  for tmux
+#
+alias t="tmux a || tmux"
+
+# start tmux when zsh
+if [ -z $TMUX ]; then
+
+    DATE=$(date +%Y-%m-%d)
+    LOG_DIR=$HOME/logs/tmux/$DATE
+
+    if [ ! -d $LOG_DIR ]; then
+	mkdir -p $LOG_DIR
+	;
+    fi
+
+    t
+fi

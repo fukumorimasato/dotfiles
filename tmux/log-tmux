@@ -5,17 +5,17 @@
 #
 #===========================================
 
+
 DATE=`date "+%Y-%m-%d"`
+TIME=`date "+%Hh%Mm%Ss"`
 LOG_DIR=$HOME/logs/tmux/$DATE
-LOG_FILE=$LOG_DIR/tmux-$DATE-$1.log
+LOG_FILE=$LOG_DIR/tmux-$DATE_$TIME-$1.log
 mkdir -p $LOG_DIR
-#tmux display-message "Started logging to $LOG_FILE"
+tmux display-message "Started logging to $LOG_FILE"
 
-#echo $2 >> $LOG_FILE
-#cat $(date +%Y-%m-%d:%H:%M:%S:%N) >> $LOG_FILE
-cat | awk '{print strftime("[%Y-%m-%d %H:%M:%S]"), $0}' >> $LOG_FILE
-#cat >> $LOG_FILE
+cat | perl -pse '$|=1; s/\n/\n${date}/g' -- -date="[$(date +%Y-%m-%d_%H:%M:%S:%N)]" >> $LOG_FILE
 
+tmux display-message "end logging to $LOG_FILE"
 
 #===========================================
 #		   EOF

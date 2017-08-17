@@ -92,3 +92,7 @@
 ;;
 (setq vc-follow-symlinks t)
 
+;;
+;; 最初の画面を消す
+;;
+(setq inhibit-startup-message t)

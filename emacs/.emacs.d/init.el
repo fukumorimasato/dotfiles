@@ -30,16 +30,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; load *.el files under proxy-dir
-(setq proxy-dir "proxy")
-(dolist (dir (directory-files (locate-user-emacs-file ".") t))
-  (when (string-match proxy-dir dir)  
-    (dolist (el (directory-files dir t))
-      (when (string-match "\\.el\\'" (file-name-nondirectory el))
-	(load el t)
-	)
-      )
-    )
-  )
+(setq proxy-file "proxy/myproxy.el")
+(load (locate-user-emacs-file proxy-file) t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -80,18 +72,25 @@
 (el-get-bundle emacs-async)
 (el-get-bundle emacs-helm/helm :branch "v2.8.8") ;;need manualy "make"
 (el-get-bundle swiper-helm)
+(el-get-bundle helm-descbinds)
 (el-get-bundle jacktasia/dumb-jump :depends (f s dash popup))
 (el-get-bundle powerline)
 (el-get-bundle tom-tan/hlinum-mode)
 (el-get-bundle k-talo/smooth-scroll
   :type git
   :url "https://github.com/k-talo/smooth-scroll.el")
-;;(el-get-bundle flycheck/flycheck :depends (dash pkg-info let-alist cl-lib))
+(el-get-bundle flycheck)
+(el-get-bundle yasuyk/helm-flycheck)
 (el-get-bundle joaotavora/yasnippet)
+(el-get-bundle helm-c-yasnippet)
 (el-get-bundle yasnippet-snippets)
 (el-get-bundle neotree)
 (el-get-bundle find-file-in-project)
 (el-get-bundle wolray/symbol-overlay  :depends (seq))
+(el-get-bundle egg)
+;;(el-get-bundle zl-phi/git-complete)
+(el-get-bundle redguardtoo/eacl)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -133,16 +132,21 @@
 (define-key global-map (kbd "C-x C-r") 'helm-recentf)
 (define-key global-map (kbd "M-y")     'helm-show-kill-ring)
 (define-key global-map (kbd "C-c i")   'helm-imenu)
-(define-key global-map (kbd "C-x b")   'helm-buffers-list)
+(define-key global-map (kbd "C-x C-b") 'nil)
+(define-key global-map (kbd "C-x C-b") 'helm-buffers-list)
 (define-key helm-map (kbd "C-h") 'delete-backward-char)
 (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
 (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
 (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
 (setq helm-buffer-details-flag nil)
 ;;;
+;;;  helm-descbinds
+;;;
+(helm-descbinds-mode)
+;;;
 ;;;  swiper
 ;;;
-(global-set-key "\C-s" 'swiper)
+(global-set-key "\C-s" 'swiper-helm)
 (defvar swiper-include-line-number-in-search t) ;; line-numberでも検索可能
 ;;;
 ;;;  dumb-jump
@@ -151,6 +155,8 @@
 (global-set-key (kbd "M-*") 'dumb-jump-back)
 (global-set-key (kbd "C-c C-j") 'dumb-jump-go)
 (global-set-key (kbd "C-c C-n") 'dumb-jump-back)
+;;(setq dumb-jump-selector 'helm)  ;; "Invalid function: helm-build-sync-source" occured
+(setq dumb-jump-selector 'ivy)
 (setq dumb-jump-force-searcher 'ag)
 (dumb-jump-mode)
 ;;;
@@ -169,10 +175,27 @@
 ;;;
 ;;;  flycheck
 ;;;
-;;(add-hook 'after-init-hook #'global-flycheck-mode)
+(global-set-key (kbd "C-c !") 'nil)
+(global-set-key (kbd "C-c C-c") 'helm-mode-flycheck-compile)
+(global-set-key (kbd "C-c C-n") 'flycheck-next-errors)
+(global-set-key (kbd "C-c C-p") 'flycheck-previous-errors)
+(global-set-key (kbd "C-c C-l") 'flycheck-list-errors)
+(global-set-key (kbd "C-c C-f") 'helm-flycheck)
+(add-hook 'after-init-hook #'global-flycheck-mode)
 ;;;
 ;;;  yasnippet
 ;;;
+(custom-set-variables '(yas-trigger-key "TAB"))
+(define-key yas-minor-mode-map (kbd "C-x &") 'nil)
+(define-key yas-minor-mode-map (kbd "C-x & C-n") 'nil)
+(define-key yas-minor-mode-map (kbd "C-x & C-s") 'nil)
+(define-key yas-minor-mode-map (kbd "C-x & C-v") 'nil)
+(define-key yas-minor-mode-map (kbd "C-x i n") 'yas-new-snippet)
+(define-key yas-minor-mode-map (kbd "C-x i i") 'yas-insert-snippet)
+(define-key yas-minor-mode-map (kbd "C-x i v") 'yas-visit-snippet-file)
+(setq helm-c-yas-space-match-any-greedy t)
+(define-key yas-minor-mode-map (kbd "C-c y") 'helm-yas-complete)
+
 (yas-global-mode 1)  ;; enable yasnippet
 ;;;
 ;;;  neotree
@@ -191,15 +214,26 @@
 (add-hook 'prog-mode-hook #'symbol-overlay-mode)
 (add-hook 'markdown-mode-hook #'symbol-overlay-mode)
 (global-set-key (kbd "M-i") 'symbol-overlay-put)
-(define-key symbol-overlay-map (kbd "p") 'symbol-overlay-jump-prev) ;; 次のシンボルへ
-(define-key symbol-overlay-map (kbd "n") 'symbol-overlay-jump-next) ;; 前のシンボルへ
-(define-key symbol-overlay-map (kbd "C-g") 'symbol-overlay-remove-all) ;; ハイライトキャンセル
+(define-key symbol-overlay-mode-map (kbd "C-c C-p") 'symbol-overlay-jump-prev)
+(define-key symbol-overlay-mode-map (kbd "C-c C-n") 'symbol-overlay-jump-next)
+(define-key symbol-overlay-mode-map (kbd "C-g") 'symbol-overlay-remove-all)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;  misc setting
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; eshell
+(setq eshell-prompt-function 'my-eshell-prompt) 
+
+(defun my-eshell-prompt () 
+  " $ " 
+  )
+
+
+;; reload setting
+(global-set-key [f12] 'eval-buffer)
 
 ;; turn on font-lock mode
 (when (fboundp 'global-font-lock-mode)

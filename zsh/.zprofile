@@ -9,7 +9,7 @@ SAVEHIST=6000000
 setopt hist_ignore_dups     # ignore duplication command history list
 setopt share_history        # share command history data
 
-export SVN_EDITOR="emacs"
+export SVN_EDITOR='emacsclient -nw -a ""'
 export LANG=ja_JP.UTF-8
 export LESSCHARSET=dos
 export LC_ALL=en_US.UTF-8
@@ -17,6 +17,7 @@ export LC_ALL=en_US.UTF-8
 export PATH="/Applications/anaconda/bin:$PATH"
 export PATH=/usr/local/bin:$PATH
 export PATH=$PATH:/opt/tools/
+export PATH=$PATH:~/bin/
 
 # for fzf
 export FZF_DEFAULT_OPTS="--ansi --reverse --select-1 --exit-0"

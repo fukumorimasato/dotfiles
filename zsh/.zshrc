@@ -270,3 +270,31 @@ if [ -z $TMUX ]; then
 
     t
 fi
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+#
+#  for anaconda
+#
+alias cact="source $HOME/.pyenv/versions/anaconda3-4.4.0/bin/activate"
+alias cdeact="source $HOME/.pyenv/versions/anaconda3-4.4.0/bin/deactivate"
+
+##
+##  for emacs
+##
+# referenced url:
+#  https://qiita.com/regashia/items/6bd9de68d596f6469129
+
+function estart() {
+  if ! emacsclient -e 0 > /dev/null 2>&1; then
+    emacs --daemon
+  fi
+}
+
+alias ekill='emacsclient -e "(kill-emacs)"'
+alias emacs='emacsclient -nw -a ""'
+
+estart
+
+# .zshrc ends here

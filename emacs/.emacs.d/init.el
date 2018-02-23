@@ -1,9 +1,16 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
-;;;  file: init.el
-;;;  author: fukumori.masato
-;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; init.el -- fukumori's emacs setting file
+
+;; Filename: init.el
+;; Package-Requires:
+;; author: fukumori.masato.dev@gmail.com
+;; version:
+;; URL:
+
+;;; commentary:
+
+;;; code:
+
+(package-initialize)
 
 ;;;
 ;;;  directory isolation

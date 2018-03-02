@@ -1,4 +1,4 @@
-;;; init.el -- fukumori's emacs setting file
+;;; Init.el -- fukumori's emacs setting file ;; _*_ coding:utf-8-unix _*_
 
 ;; Filename: init.el
 ;; Package-Requires:
@@ -13,7 +13,7 @@
 (package-initialize)
 
 ;;;
-;;;  directory isolation
+;;;  directory isolationp
 ;;;
 
 (if load-file-name
@@ -27,6 +27,11 @@
 (defconst machine-mac (eq system-type 'darwin) "Mac.")
 (defconst machine-win (eq system-type 'darwin) "Windows.")
 (defconst running-24 (eq emacs-major-version 24) "Running Emacs 24.")
+(defconst user-home-dir "~")
+(defconst user-doc-dir  (concat user-home-dir "/Document"))
+(when machine-linux
+  (defconst user-doc-dir  (concat user-home-dir "/doc")))
+(defconst user-org-dir (concat user-doc-dir "/org"))
 
 ;;;
 ;;;  proxy setting
@@ -110,6 +115,11 @@
   (el-get-bundle ag)
   )
 
+(use-package helm-ag
+  :init
+  (el-get-bundle helm-ag)
+  )
+
 ;;;
 ;;; migemo
 ;;;
@@ -168,7 +178,8 @@
 ;;
 (use-package helm-projectile
   :init
-  (el-get-bundle helm-projectile :depends (projectile))
+  (el-get-bundle helm-projectile)
+  :config
   (projectile-mode)
   (helm-projectile-on)
   )
@@ -177,18 +188,10 @@
 ;;; helm-swoop
 ;;;
 (use-package helm-swoop
-  :ensure t
+  :init
+  (el-get-bundle helm-swoop)
   :bind
   ("C-s" . helm-swoop)
-  )
-
-;;;
-;;; swoop
-;;;
-(use-package swoop
-  :ensure t
-  :init
-  (defvar swoop-migemo-options "-q -e -d /usr/share/cmigemo/utf-8/migemo-dict")
   )
 
 ;;;
@@ -232,7 +235,6 @@
   (dumb-jump-mode)
   )
 
-
 ;;;
 ;;;  yasnippet: enable intertion of snippet.
 ;;;
@@ -244,10 +246,9 @@
 
   :bind
   (:map yas-minor-mode-map
-;;   ("C-x &" . nil)
-;;   ("C-x & C-n" . nil)
-;;   ("C-x & C-s" . nil)
-;;   ("C-x & C-v" . nil)
+   ("C-x & C-n" . nil)
+   ("C-x & C-s" . nil)
+   ("C-x & C-v" . nil)
    ("C-x i n" . yas-new-snippet)
    ("C-x i i" . yas-insert-snippet)
    ("C-x i v" . yas-visit-snippet-file)
@@ -267,6 +268,23 @@
   (setq helm-c-yas-space-match-any-greedy t)
   (yas-global-mode 1)  ;; enable yasnippet
   )
+
+
+;;;
+;;;  conda
+;;;
+;; https://github.com/necaris/conda.el
+(use-package conda
+  :init
+  (el-get-bundle necaris/conda
+    :type git
+    :url "https://github.com/necaris/conda.el"
+    :depends (pythonic virtualenvwrapper))
+  (custom-set-variables
+   '(conda-anaconda-home "~/.pyenv/versions/anaconda3-5.1.0"))
+  (conda-env-autoactivate-mode t)
+  )
+
 
 ;;;
 ;;;  company
@@ -306,19 +324,55 @@
   (defun set-yas-as-company-backend ()
     (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
     )
-  (add-hook 'company-mode-hook 'set-yas-as-company-backend)  
+  (add-hook 'company-mode-hook 'set-yas-as-company-backend)
   )
 
-(use-package company-irony
-  :disabled t  ;; Can not install irony server on Ubuntu 16.04
+;;;
+;;;  company-jedi
+;;;
+;; referenced url:
+;;  http://tkf.github.io/emacs-jedi/latest/
+;;  https://github.com/syohex/emacs-company-jedi
+;;  https://github.com/syohex/emacs-company-jedi/wiki
+;;
+(use-package company-jedi
+  :if (fboundp 'company-mode)
   :init
-  (el-get-bundle irony-mode) 
-  (el-get-bundle company-irony)
-  (add-hook 'c-mode-hook 'irony-mode)
-  (add-hook 'c++-mode-hook 'irony-mode)
-  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-  :config
-  (add-to-list 'company-backends 'company-irony) ; backend追加  
+  (el-get-bundle company-jedi)
+;;  (setq jedi:environment-virtualenv (list (expand-file-name (locate-user-emacs-file ".python-environments/"))))
+  (setq jedi:server-args
+	'("--sys-path" "~/.pyenv/versions/anaconda3-5.1.0/lib/python3.6"
+	  "--sys-path" "~/.pyenv/versions/anaconda3-5.1.0/lib/python3.6/lib-dynload"
+	  "--sys-path" "~/.pyenv/versions/anaconda3-5.1.0/lib/python3.6/site-packages"
+	  ;; ... and more! ...
+	  ))
+  (defun my/company-jedi-mode-hook ()
+    (add-to-list 'company-backends 'company-jedi))
+  (add-hook 'python-mode-hook 'my/company-jedi-mode-hook)
+  (add-hook 'python-mode-hook 'jedi:setup)
+  (setq jedi:complete-on-dot t)
+  (setq jedi:use-shortcuts t)
+  )
+
+
+(use-package company-anaconda
+  :disabled t
+  :init
+  (el-get-bundle company-anaconda :depends (anaconda-mode))
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)  
+  (defun my/company-anaconda-mode-hook ()
+    (add-to-list 'company-backends 'company-anaconda))
+  (add-hook 'python-mode-hook 'my/company-anaconda-mode-hook)
+;;  (add-to-list 'company-backends '(company-anaconda :with company-capf))
+  )
+
+;;;
+;;;  helm-pydoc
+;;;
+(use-package helm-pydoc
+  :init
+  (el-get-bundle helm-pydoc)
   )
 
 ;;;
@@ -366,19 +420,21 @@
   (smooth-scroll-mode)
   )
 
-
 ;;;
 ;;;  flycheck: syntacks check.
 ;;;
-(el-get-bundle flycheck)
-(el-get-bundle yasuyk/helm-flycheck)
-(global-set-key (kbd "C-c !") 'nil)
-(global-set-key (kbd "C-c C-c") 'helm-mode-flycheck-compile)
-(global-set-key (kbd "C-c C-n") 'flycheck-next-errors)
-(global-set-key (kbd "C-c C-p") 'flycheck-previous-errors)
-(global-set-key (kbd "C-c C-l") 'flycheck-list-errors)
-(global-set-key (kbd "C-c C-f") 'helm-flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
+(use-package flycheck
+  :init
+  (el-get-bundle flycheck)
+  (el-get-bundle yasuyk/helm-flycheck)
+  (add-hook 'after-init-hook #'global-flycheck-mode)  
+  :bind
+  ("C-c C-n" . flycheck-next-errors)
+  ("C-c C-p" . flycheck-previous-errors)
+  ("C-c C-l" . flycheck-list-errors)
+  ("C-c C-c" . helm-mode-flycheck-compile)
+  ("C-c C-f" . helm-flycheck)
+  )
 
 ;;;
 ;;;  neotree: Display directory tree.
@@ -394,30 +450,27 @@
 ;;;
 ;;; symbol-overlay
 ;;;
-(el-get-bundle wolray/symbol-overlay  :depends (seq))
-(require 'symbol-overlay)
-(add-hook 'prog-mode-hook #'symbol-overlay-mode)
-(add-hook 'markdown-mode-hook #'symbol-overlay-mode)
-(global-set-key (kbd "M-i") 'symbol-overlay-put)
-(define-key symbol-overlay-mode-map (kbd "C-c C-p") 'symbol-overlay-jump-prev)
-(define-key symbol-overlay-mode-map (kbd "C-c C-n") 'symbol-overlay-jump-next)
-(define-key symbol-overlay-mode-map (kbd "C-g") 'symbol-overlay-remove-all)
-
+(use-package symbol-overlay
+  :init
+  (el-get-bundle wolray/symbol-overlay  :depends (seq))
+  (add-hook 'prog-mode-hook #'symbol-overlay-mode)
+  (add-hook 'markdown-mode-hook #'symbol-overlay-mode)
+  :bind
+  (("M-i" . symbol-overlay-put)
+   (:map symbol-overlay-mode-map
+	 ("C-c C-p" . symbol-overlay-jump-prev)
+	 ("C-c C-n" . symbol-overlay-jump-next)
+	 ("C-g" . symbol-overlay-remove-all)
+	 )
+   )
+  )
+  
 ;;;
 ;;; magit
 ;;;
 (use-package magit
   :init
   (el-get-bundle magit)
-  )
-
-;;;
-;;; egg
-;;;
-(use-package egg
-  :disabled t  ;; use magit.
-  :init
-  (el-get-bundle egg)
   )
 
 
@@ -449,23 +502,20 @@
   (add-hook 'emacs-startup-hook 'rainbow-delimiters-using-stronger-colors)
   )
 
-;;;
-;;;  company-jedi
-;;;
-;; referenced url:
-;;  http://tkf.github.io/emacs-jedi/latest/
-;;  https://github.com/syohex/emacs-company-jedi
-;;
-(el-get-bundle company-jedi :depends (company-mode))
-(defun my/python-mode-hook ()
-  (add-to-list 'company-backends 'company-jedi))
-(add-hook 'python-mode-hook 'my/python-mode-hook)
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t)
+(use-package py-autopep8
+  :init
+  (el-get-bundle py-autopep8)
+  :config
+  (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+  )
 
-(el-get-bundle helm-pydoc)
-;;(el-get-bundle anaconda-mode)
-
+;;; https://github.com/naiquevin/sphinx-doc.el/tree/f39da2e6cae55d5d7c7ce887e69755b7529bcd67
+(use-package sphinx-doc
+  :init
+  (el-get-bundle sphinx-doc)
+  :config
+  (add-hook 'python-mode-hook (lambda () (sphinx-doc-mode t)))
+  )
 
 ;;;
 ;;;  golden ratio
@@ -474,6 +524,7 @@
 ;; golden ratio
 (use-package golden-ratio
   :init
+  (el-get-bundle golden-ratio)
   ;;  (golden-ratio-mode 1) ;; Enable manually
   :config
   (add-to-list 'golden-ratio-exclude-buffer-names " *NeoTree*")
@@ -485,11 +536,37 @@
 (global-set-key (kbd "<C-up>")    'windmove-up)
 (global-set-key (kbd "<C-right>") 'windmove-right)
 
-
 ;;;
-;;;  misc setting
+;;; org-mode
 ;;;
-
+(use-package org
+  :ensure t
+  :init
+  (setq org-agenda-files (list user-org-dir))
+  (setq my-org-todo-file (concat user-org-dir "/todo.org"))
+  (setq my-org-tech-file (concat user-org-dir "/tech.org"))
+  (setq my-org-patent-file (concat user-org-dir "/patent.org"))
+  (setq my-org-meeting-file (concat user-org-dir "/meeting.org"))
+  (setq my-org-home-file (concat user-org-dir "/home.org"))
+  (setq my-org-home-file (concat user-org-dir "/kendo.org"))  
+  (setq org-capture-templates
+	'(("t" "Todo" entry (file (expand-file-name my-org-todo-file))
+	   "* TODO %?\n    %T")
+	  ("g" "Tech" entry (file (expand-file-name my-org-tech-file))
+	   "* %?\n    %T")
+	  ("p" "Patent" entry (file (expand-file-name my-org-patent-file))
+	   "* %?\n    %T")
+	  ("m" "Meeting" entry (file+datetree (expand-file-name my-org-meeting-file))
+	   "* %?\n    %T" :jump-to-captured 1)
+	  ("h" "Home" entry (file (expand-file-name my-org-home-file))
+	   "* %?\n    %T")	   	   
+	  ("k" "kendo" entry (file (expand-file-name my-org-home-file))
+	   "* %?\n    %T")	   	   
+	  ))
+  :bind
+  ("C-c q" . org-capture)
+  ("C-c a" . org-agenda)
+  )
 
 ;; referenced url: https://qiita.com/kakikubo/items/412715e378b03b79faff
 ;; shut up, emacs!
@@ -502,6 +579,17 @@
   "Eshell prompt setting."
   " $ "
   )
+
+
+;; locale
+(set-locale-environment nil)
+(set-language-environment "Japanese")
+(prefer-coding-system 'utf-8-unix)
+(set-default-coding-systems 'utf-8-unix)
+(set-terminal-coding-system 'utf-8-unix)
+(set-keyboard-coding-system 'utf-8-unix)
+(set-buffer-file-coding-system 'utf-8-unix)
+(setq default-buffer-file-coding-system 'utf-8-unix)
 
 ;; reload setting
 (global-set-key [f12] 'eval-buffer)
@@ -528,15 +616,6 @@
 (global-set-key "\C-x\C-g" 'goto-line)
 (put 'set-goal-column 'disabled nil)
 
-;; 環境を日本語、UTF-8にする
-(set-locale-environment nil)
-(set-language-environment "Japanese")
-(prefer-coding-system 'utf-8-unix)
-(set-default-coding-systems 'utf-8-unix)
-(set-terminal-coding-system 'utf-8-unix)
-(set-keyboard-coding-system 'utf-8-unix)
-(set-buffer-file-coding-system 'utf-8-unix)
-(setq default-buffer-file-coding-system 'utf-8-unix)
 
 ;; 対応する括弧を光らせる
 (show-paren-mode 1)
@@ -569,6 +648,7 @@
 (defun insert-current-time()
   (interactive)
   (insert (format-time-string "%Y-%m-%d(%a) %H:%M:%S" (current-time))))
+(global-set-key (kbd "C-c d") 'insert-current-time)
 
 
 ;; referenced url: https://qiita.com/icb54615/items/b04be54caf46d2bf721a
@@ -582,7 +662,7 @@
               -1))
         (dy (if (= (nth 1 (window-edges)) 0) 1
               -1))
-        action c)
+p        action c)
     (catch 'end-flag
       (while t
         (setq action
@@ -606,6 +686,4 @@
                    (call-interactively command)))
                (message "Quit")
                (throw 'end-flag t)))))))
-(global-set-key (kbd "C-c C-w") 'window-resizer) ;; optimaized for me
-
-;;; init.el ends here
+(global-set-key (kbd "C-c w") 'window-resizer)

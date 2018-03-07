@@ -63,24 +63,6 @@
 (require 'use-package)
 
 ;;;
-;;;  color theme
-;;;
-;;  adapt solarized
-(use-package solarized-theme
-  :init
-  (add-to-list 'custom-theme-load-path
-	       (locate-user-emacs-file "themes/emacs-color-theme-solarized"))
-  (defun my-theme-setup-hook ()
-    (interactive)
-    (set-terminal-parameter nil 'background-mode 'light)
-    (set-frame-parameter nil 'background-mode 'light)
-    (load-theme 'solarized t)
-    )
-  (my-theme-setup-hook)
-  (add-hook 'tty-setup-hook 'my-theme-setup-hook)
-  )
-
-;;;
 ;;;  package install by use-package and el-get
 ;;;
 
@@ -98,6 +80,22 @@
     (goto-char (point-max))
     (eval-print-last-sexp)))
 
+;;;
+;;;  color theme
+;;;
+;;  adapt solarized
+(use-package solarized-theme
+  :init
+  (el-get-bundle color-theme-solarized)
+  (defun my-theme-setup-hook ()
+    (interactive)
+    (set-terminal-parameter nil 'background-mode 'light)
+    (set-frame-parameter nil 'background-mode 'light)
+    (load-theme 'solarized t)
+    )
+  (my-theme-setup-hook)
+  (add-hook 'tty-setup-hook 'my-theme-setup-hook)
+  )
 
 ;;
 ;;  dsvn

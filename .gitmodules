@@ -2,6 +2,3 @@
 	path = zsh/.zplug
 	url = https://github.com/zplug/zplug
 	ignore = dirty
-[submodule "emacs/.emacs.d/themes/emacs-color-theme-solarized"]
-	path = emacs/.emacs.d/themes/emacs-color-theme-solarized
-	url = https://github.com/sellout/emacs-color-theme-solarized.git

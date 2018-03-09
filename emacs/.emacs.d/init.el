@@ -65,7 +65,6 @@
 ;;;
 ;;;  package install by use-package and el-get
 ;;;
-
 (use-package key-chord          :ensure t :config (key-chord-mode 1))
 (use-package use-package-chords :ensure t)
 
@@ -89,6 +88,8 @@
   (el-get-bundle color-theme-solarized)
   (defun my-theme-setup-hook ()
     (interactive)
+;;    (set-terminal-parameter nil 'background-mode 'dark)
+;;    (set-frame-parameter nil 'background-mode 'dark)
     (set-terminal-parameter nil 'background-mode 'light)
     (set-frame-parameter nil 'background-mode 'light)
     (load-theme 'solarized t)
@@ -97,23 +98,93 @@
   (add-hook 'tty-setup-hook 'my-theme-setup-hook)
   )
 
-;;
-;;  dsvn
-;;
-(use-package dsvn
-  :disabled t ;; not comfortable for me.
-  :ensure t
+;;;
+;;;  rainbow-mode
+;;;
+(use-package rainbow-mode
+  :init
+  (el-get-bundle emacsmirror:rainbow-mode)
+  )
+
+;;;
+;;; powerline
+;;;
+(use-package powerline
+  :init
+  (el-get-bundle powerline)
+  (el-get-bundle emacsmirror:xpm)
+
+  ;; http://n8.hatenablog.com/entry/2012/03/21/172928
+  ;; https://qiita.com/itome0403/items/c0fba8186ee8910bf8ab
+
+  (defun powerline-my-theme ()
+    "Setup the my mode-line."
+    (interactive)
+    (setq-default mode-line-format
+		  '("%e"
+		    (:eval
+		     (let* ((active (powerline-selected-window-active))
+			    (mode-line (if active 'mode-line 'mode-line-inactive))
+			    (face0 (if active 'mode-line-color-active-0 'mode-line-color-inactive-0))
+			    (face1 (if active 'mode-line-color-active-1 'mode-line-color-inactive-1))
+			    (face2 (if active 'mode-line-color-active-2 'mode-line-color-inactive-2))
+			    (face3 (if active 'mode-line-color-active-3 'mode-line-color-inactive-3))
+			    (face4 (if active 'mode-line-color-active-4 'mode-line-color-inactive-4))
+			    (powerline-current-separator 'utf-8)
+			    (separator-left (intern (format "powerline-%s-%s"
+							    (powerline-current-separator)
+							    (car powerline-default-separator-dir))))
+			    (separator-right (intern (format "powerline-%s-%s"
+							     (powerline-current-separator)
+							     (cdr powerline-default-separator-dir))))
+			    (lhs (list (powerline-raw " %* %m  " face0)
+				       (funcall separator-left face0 face1)
+				       (powerline-raw "%Z  " face1)
+				       (funcall separator-left face1 face2)
+				       (powerline-raw " %b   " face2)
+				       ))
+			    (rhs (list (powerline-vc face2)
+				       (funcall separator-right face2 face1)
+				       (powerline-raw " %p " face1)
+				       (funcall separator-right face1 face0)
+				       (powerline-raw "    %4l:%3c " face0)
+				       (powerline-fill face0 0)
+				       )))
+		       (concat (powerline-render lhs)
+			       (powerline-fill face3 (powerline-width rhs))
+			       (powerline-render rhs)))))))
+    
+  (defun make/set-face (face-name bg-color fg-color  weight inherit)
+    (make-face face-name)
+    (set-face-attribute face-name nil
+			:foreground fg-color :background bg-color
+			:box nil :weight weight :inherit inherit))
+  
+  (make/set-face 'mode-line-color-active-0 "#ffffd7" "#5f5faf" 'bold 'mode-line)
+  (make/set-face 'mode-line-color-active-1 "#ffffd7" "#00afaf" 'bold 'mode-line)
+  (make/set-face 'mode-line-color-active-2 "#ffffd7" "#d33682" 'bold 'mode-line)
+  (make/set-face 'mode-line-color-active-3 "#ffffd7" "#585858" 'bold 'mode-line-inactive)
+  (make/set-face 'mode-line-color-active-4 "#ffffd7" "#93a1a1" 'bold 'mode-line)
+  (make/set-face 'mode-line-color-inactive-0 "#ffffd7" "#585858" 'bold 'mode-line-inactive)
+  (make/set-face 'mode-line-color-inactive-1 "#ffffd7" "#808080" 'bold 'mode-line-inactive)
+  (make/set-face 'mode-line-color-inactive-2 "#ffffd7" "#585858" 'bold 'mode-line-inactive)
+  (make/set-face 'mode-line-color-inactive-3 "#ffffd7" "#93a1a1" 'bold 'mode-line-inactive)
+  (make/set-face 'mode-line-color-inactive-4 "#ffffd7" "#585858" 'bold 'mode-line-inactive)
+  
+  (powerline-my-theme)
   )
 
 ;;
 ;; ag
 ;;
 (use-package ag
+  :diminish ""
   :init
   (el-get-bundle ag)
   )
 
 (use-package helm-ag
+  :diminish ""
   :init
   (el-get-bundle helm-ag)
   )
@@ -123,6 +194,7 @@
 ;;;
 ;; referenced url: https://github.com/tsu-nera/dotfiles/blob/master/.emacs.d/inits/20_text.org
 (use-package migemo
+  :diminish ""
   :ensure t
   :config
   (setq migemo-options '("-q" "--emacs"))
@@ -145,6 +217,7 @@
 ;;; helm
 ;;;
 (use-package helm
+  :diminish ""
   :init
   (el-get-bundle emacs-helm/helm :branch "v2.8.8") ;;need manualy "make"
   :bind
@@ -175,6 +248,7 @@
 ;; helm-projectile/projectile
 ;;
 (use-package helm-projectile
+  :diminish ""
   :init
   (el-get-bundle helm-projectile)
   :config
@@ -193,22 +267,10 @@
   )
 
 ;;;
-;;;  swiper-helm
-;;;
-(use-package swiper-helm
-  :disabled t  ;; not comfortable for me.
-  :init
-  (el-get-bundle swiper-helm)
-  :bind
-  ("\C-s" . swiper-helm)
-  :config
-  (defvar swiper-include-line-number-in-search t) ;; line-numberでも検索可能
-  )
-
-;;;
 ;;;  helm-descbinds
 ;;;
 (use-package helm-descbinds
+  :diminish ""
   :init
   (el-get-bundle helm-descbinds)
   :config
@@ -219,6 +281,7 @@
 ;;;  dumb-jump
 ;;;
 (use-package dumb-jump
+  :diminish ""
   :init
   (el-get-bundle jacktasia/dumb-jump :depends (f s dash popup))
   :bind
@@ -237,6 +300,7 @@
 ;;;  yasnippet: enable intertion of snippet.
 ;;;
 (use-package yasnippet
+  :diminish ""
   :init
   (el-get-bundle joaotavora/yasnippet)
   (el-get-bundle helm-c-yasnippet)
@@ -273,6 +337,7 @@
 ;;;
 ;; https://github.com/necaris/conda.el
 (use-package conda
+  :diminish ""
   :init
   (el-get-bundle necaris/conda
     :type git
@@ -292,6 +357,7 @@
 ;;  https://qiita.com/sune2/items/c040171a0e377e1400f6
 ;;
 (use-package company
+  :diminish ""
   :defer t
   :init
   (el-get-bundle company-mode)
@@ -335,6 +401,7 @@
 ;;
 (use-package company-jedi
   :if (fboundp 'company-mode)
+  :diminish ""
   :init
   (el-get-bundle company-jedi)
 ;;  (setq jedi:environment-virtualenv (list (expand-file-name (locate-user-emacs-file ".python-environments/"))))
@@ -382,23 +449,16 @@
   )
 
 ;;;
-;;; powerline
-;;;
-(use-package powerline
-  :init
-  (el-get-bundle powerline)
-  )
-
-;;;
 ;;; hlinum: 左側に行を表示する.
 ;;;
 (el-get-bundle tom-tan/hlinum-mode)
 (global-linum-mode t)
-(set-face-foreground 'linum "gray64")
+(set-face-foreground 'linum "green")
 (setq linum-format "%5d ")
 (require 'hl-line)
-;;(set-face-background 'hl-line "black")
-(set-face-attribute 'hl-line nil :inherit nil)
+;;(set-face-foreground 'hl-line "#3FC")
+;;(set-face-background 'hl-line "green")
+;;(set-face-attribute 'hl-line nil :inherit nil)
 (global-hl-line-mode)
 (require 'hlinum)
 (hlinum-activate)
@@ -409,6 +469,7 @@
 ;;; smooth-scroll
 ;;;
 (use-package smooth-scroll
+  :diminish ""
   :init
   (el-get-bundle k-talo/smooth-scroll
     :type git
@@ -422,6 +483,7 @@
 ;;;  flycheck: syntacks check.
 ;;;
 (use-package flycheck
+  :diminish ""
   :init
   (el-get-bundle flycheck)
   (el-get-bundle yasuyk/helm-flycheck)
@@ -438,6 +500,7 @@
 ;;;  neotree: Display directory tree.
 ;;;
 (use-package neotree
+  :diminish ""
   :init
   (el-get-bundle neotree)
   :bind
@@ -449,6 +512,7 @@
 ;;; symbol-overlay
 ;;;
 (use-package symbol-overlay
+  :diminish ""
   :init
   (el-get-bundle wolray/symbol-overlay  :depends (seq))
   (add-hook 'prog-mode-hook #'symbol-overlay-mode)
@@ -469,6 +533,8 @@
 (use-package magit
   :init
   (el-get-bundle magit)
+  :bind
+  ("C-c C-g" . magit-status)
   )
 
 
@@ -482,25 +548,17 @@
 ;;  https://github.com/sellout/emacs-color-theme-solarized/issues/165
 ;;  https://qiita.com/megane42/items/ee71f1ff8652dbf94cf7
 (use-package rainbow-delimiters
+  :diminish ""
   :init
   (el-get-bundle rainbow-delimiters)
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
   :config
   (outline-minor-mode t)
   (outline-minor-mode nil)
-  (require 'cl-lib)
-  (require 'color)
-  (defun rainbow-delimiters-using-stronger-colors()
-    (interactive)
-    (cl-loop
-     for index from 1 to rainbow-delimiters-max-face-count
-     do
-     (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
-       (cl-callf color-saturate-name (face-foreground face) 30))))  ;;; not working.
-  (add-hook 'emacs-startup-hook 'rainbow-delimiters-using-stronger-colors)
   )
 
 (use-package py-autopep8
+  :diminish ""
   :init
   (el-get-bundle py-autopep8)
   :config
@@ -509,6 +567,7 @@
 
 ;;; https://github.com/naiquevin/sphinx-doc.el/tree/f39da2e6cae55d5d7c7ce887e69755b7529bcd67
 (use-package sphinx-doc
+  :diminish ""
   :init
   (el-get-bundle sphinx-doc)
   :config
@@ -618,9 +677,6 @@
 ;; 対応する括弧を光らせる
 (show-paren-mode 1)
 
-;; カーソル設定
-(set-cursor-color "green")
-(blink-cursor-mode t)
 
 ;; ウィンドウ内に収まらないときだけ、カッコ内も光らせる
 (setq show-paren-style 'mixed)
@@ -660,7 +716,7 @@
               -1))
         (dy (if (= (nth 1 (window-edges)) 0) 1
               -1))
-p        action c)
+        action c)
     (catch 'end-flag
       (while t
         (setq action

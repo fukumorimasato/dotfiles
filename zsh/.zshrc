@@ -18,7 +18,7 @@ colors
 #  : /etc/zshrcで設定しているのでzshenvではなく
 #  : zshrcで設定を行う
 HOST=`hostname`
-PROMPT="[${fg[yellow]}%n@%m${reset_color} ${fg[green]}%c${reset_color}]$ "
+PROMPT="[%{${fg[yellow]}%}%n@%m%{${reset_color}%} %{${fg[green]}%}%c%{${reset_color}%}]$ "
 
 # コマンドを途中まで入力後、historyから絞り込み
 # 例 ls まで打ってCtrl+pでlsコマンドをさかのぼる、Ctrl+bで逆順
@@ -109,7 +109,7 @@ zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug "ascii-soup/zsh-url-highlighter"
 
 # program
-zplug "voronkovich/mysql.plugin.zsh"
+#zplug "voronkovich/mysql.plugin.zsh"
 
 # tools
 zplug "marzocchi/zsh-notify"
@@ -132,7 +132,7 @@ zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
 zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
 
 # for inclimental search
-zplug "zsh-users/zaw"
+#zplug "zsh-users/zaw"
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
@@ -169,13 +169,13 @@ function history-selection() {
 
     case ${OSTYPE} in
         darwin*)
-        # setting for mac
-        BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | \`available ${FILTER}\``
-        ;;
-    linux*)
-        # setting for linux
-        BUFFER=`history -n 1 | tac  | awk '!a[$0]++' | \`available ${FILTER}\``
-        ;;
+            # setting for mac
+            BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | \`available ${FILTER}\``
+            ;;
+	linux*)
+            # setting for linux
+            BUFFER=`history -n 1 | tac  | awk '!a[$0]++' | \`available ${FILTER}\``
+            ;;
     esac
 
     CURSOR=$#BUFFER
@@ -270,6 +270,9 @@ if [ -z $TMUX ]; then
 
     t
 fi
+
+
+
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"

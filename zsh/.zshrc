@@ -277,12 +277,6 @@ export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
-#
-#  for anaconda
-#
-alias cact="source $HOME/.pyenv/versions/anaconda3-4.4.0/bin/activate"
-alias cdeact="source $HOME/.pyenv/versions/anaconda3-4.4.0/bin/deactivate"
-
 ##
 ##  for emacs
 ##

@@ -331,24 +331,6 @@
   (yas-global-mode 1)  ;; enable yasnippet
   )
 
-
-;;;
-;;;  conda
-;;;
-;; https://github.com/necaris/conda.el
-(use-package conda
-  :diminish ""
-  :init
-  (el-get-bundle necaris/conda
-    :type git
-    :url "https://github.com/necaris/conda.el"
-    :depends (pythonic virtualenvwrapper))
-  (custom-set-variables
-   '(conda-anaconda-home "~/.pyenv/versions/anaconda3-5.1.0"))
-  (conda-env-autoactivate-mode t)
-  )
-
-
 ;;;
 ;;;  company
 ;;;
@@ -417,19 +399,6 @@
   (add-hook 'python-mode-hook 'jedi:setup)
   (setq jedi:complete-on-dot t)
   (setq jedi:use-shortcuts t)
-  )
-
-
-(use-package company-anaconda
-  :disabled t
-  :init
-  (el-get-bundle company-anaconda :depends (anaconda-mode))
-  (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)  
-  (defun my/company-anaconda-mode-hook ()
-    (add-to-list 'company-backends 'company-anaconda))
-  (add-hook 'python-mode-hook 'my/company-anaconda-mode-hook)
-;;  (add-to-list 'company-backends '(company-anaconda :with company-capf))
   )
 
 ;;;

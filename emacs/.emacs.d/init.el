@@ -223,9 +223,13 @@
     (setq migemo-command "cmigemo")
     (setq migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict"))
 
-  ;;  (when windows-p
-  ;;    (setq migemo-command "c:/app/cmigemo-default-win64/cmigemo.exe")
-  ;;    (setq migemo-dictionary "c:/app/cmigemo-default-win64/dict/utf-8/migemo-dict"))
+  (when machine-mac
+    (setq migemo-command "cmigemo")
+    (setq migemo-dictionary "/usr/local/Cellar/cmigemo/HEAD-5c014a8/share/migemo/utf-8/migemo-dict/usr/local/Cellar/cmigemo/HEAD-5c014a8/sha"))
+  
+;;  (when windows-p
+;;    (setq migemo-command "c:/app/cmigemo-default-win64/cmigemo.exe")
+;;    (setq migemo-dictionary "c:/app/cmigemo-default-win64/dict/utf-8/migemo-dict"))
   (migemo-init)
   )
 
@@ -258,6 +262,7 @@
   (setq helm-buffer-details-flag nil)
   (recentf-mode 1)
   (helm-mode 1)
+  (helm-migemo-mode 1)
   )
 
 ;;

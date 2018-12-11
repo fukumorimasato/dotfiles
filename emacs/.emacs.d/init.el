@@ -674,8 +674,8 @@
 
 ;; ウィンドウ内に収まらないときだけ、カッコ内も光らせる
 (setq show-paren-style 'mixed)
-(set-face-background 'show-paren-match-face "grey")
-(set-face-foreground 'show-paren-match-face "black")
+(set-face-background 'show-paren-match "grey")
+(set-face-foreground 'show-paren-match "black")
 
 ;; 列数を表示する
 (column-number-mode t)

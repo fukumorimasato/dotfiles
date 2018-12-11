@@ -395,34 +395,6 @@
   )
 
 ;;;
-;;;  company-jedi
-;;;
-;; referenced url:
-;;  http://tkf.github.io/emacs-jedi/latest/
-;;  https://github.com/syohex/emacs-company-jedi
-;;  https://github.com/syohex/emacs-company-jedi/wiki
-;;
-(use-package company-jedi
-  :if (fboundp 'company-mode)
-  :diminish ""
-  :init
-  (el-get-bundle company-jedi)
-;;  (setq jedi:environment-virtualenv (list (expand-file-name (locate-user-emacs-file ".python-environments/"))))
-  (setq jedi:server-args
-	'("--sys-path" "~/.pyenv/versions/anaconda3-5.1.0/lib/python3.6"
-	  "--sys-path" "~/.pyenv/versions/anaconda3-5.1.0/lib/python3.6/lib-dynload"
-	  "--sys-path" "~/.pyenv/versions/anaconda3-5.1.0/lib/python3.6/site-packages"
-	  ;; ... and more! ...
-	  ))
-  (defun my/company-jedi-mode-hook ()
-    (add-to-list 'company-backends 'company-jedi))
-  (add-hook 'python-mode-hook 'my/company-jedi-mode-hook)
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (setq jedi:complete-on-dot t)
-  (setq jedi:use-shortcuts t)
-  )
-
-;;;
 ;;;  helm-pydoc
 ;;;
 (use-package helm-pydoc

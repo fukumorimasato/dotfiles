@@ -33,6 +33,9 @@
   (defconst user-doc-dir  (concat user-home-dir "/doc")))
 (defconst user-org-dir (concat user-doc-dir "/org"))
 
+(when (eq system-type 'darwin)
+  (setq ns-command-modifier (quote meta)))
+
 ;;;
 ;;;  proxy setting
 ;;;
@@ -46,7 +49,8 @@
 ;;;
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;;             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 ;;(add-to-list 'package-archives
 ;;             '("marmalade" . "http://marmalade-repo.org/packages/") t) ;; didn't work.
 (package-initialize)
@@ -86,17 +90,27 @@
 (use-package solarized-theme
   :init
   (el-get-bundle color-theme-solarized)
-  (defun my-theme-setup-hook ()
-    (interactive)
-;;    (set-terminal-parameter nil 'background-mode 'dark)
-;;    (set-frame-parameter nil 'background-mode 'dark)
-    (set-terminal-parameter nil 'background-mode 'light)
-    (set-frame-parameter nil 'background-mode 'light)
-    (load-theme 'solarized t)
-    )
-  (my-theme-setup-hook)
-  (add-hook 'tty-setup-hook 'my-theme-setup-hook)
+  (set-terminal-parameter nil 'background-mode 'dark)
+  (set-frame-parameter nil 'background-mode 'dark)
+;;    (set-terminal-parameter nil 'background-mode 'light)
+;;    (set-frame-parameter nil 'background-mode 'light)
   )
+
+(use-package prassee-theme
+  :init
+  (el-get-bundle prassee-theme
+    :type git
+    :url "https://github.com/prassee/prassee-emacs-theme")
+  :config
+  (add-to-list 'custom-theme-load-path (locate-user-emacs-file "el-get/prassee-theme"))
+  )
+
+(defun my-theme-setup-hook ()
+  (interactive)
+  (load-theme 'solarized t)
+  )
+(my-theme-setup-hook)
+(add-hook 'tty-setup-hook 'my-theme-setup-hook)
 
 ;;;
 ;;;  rainbow-mode
@@ -142,8 +156,10 @@
 				       (powerline-raw "%Z  " face1)
 				       (funcall separator-left face1 face2)
 				       (powerline-raw " %b   " face2)
+				       (funcall separator-left face2 face3)
 				       ))
-			    (rhs (list (powerline-vc face2)
+			    (rhs (list (funcall separator-right face3 face2)
+				       (powerline-vc face2)
 				       (funcall separator-right face2 face1)
 				       (powerline-raw " %p " face1)
 				       (funcall separator-right face1 face0)
@@ -503,7 +519,7 @@
   :init
   (el-get-bundle magit)
   :bind
-  ("C-c C-g" . magit-status)
+  ("M-g" . magit-status)
   )
 
 
@@ -593,6 +609,10 @@
   ("C-c q" . org-capture)
   ("C-c a" . org-agenda)
   )
+
+;; Ctrl+hをbackspaceとして使用する
+;; http://akisute3.hatenablog.com/entry/20120318/1332059326
+(keyboard-translate ?\C-h ?\C-?)
 
 ;; referenced url: https://qiita.com/kakikubo/items/412715e378b03b79faff
 ;; shut up, emacs!
@@ -710,3 +730,19 @@
                (message "Quit")
                (throw 'end-flag t)))))))
 (global-set-key (kbd "C-c w") 'window-resizer)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(conda-anaconda-home "~/.pyenv/versions/anaconda3-5.1.0")
+ '(package-selected-packages
+   (quote
+    (helm el-get use-package-chords key-chord use-package)))
+ '(yas-trigger-key "TAB"))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

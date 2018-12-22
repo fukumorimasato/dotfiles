@@ -75,7 +75,8 @@ alias gdc="git diff --cached"
 alias -g T='| tail'
 alias -g L='| less'
 alias -g F='| fzf'
-alias -g P='| peco'
+alias -g S='| sort'
+alias -g P='| sort |peco'
 
 # for extract
 function extract() {

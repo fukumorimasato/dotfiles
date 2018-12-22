@@ -42,6 +42,9 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 #  aliases
 #
 
+# for validate local aliases when execute sudo cmd
+alias sudo="sudo "
+
 # for ls
 case ${OSTYPE} in
     darwin*)
@@ -272,11 +275,11 @@ if [ -z $TMUX ]; then
     t
 fi
 
-
-
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+if [ -x "$(which pyenv)" ]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
 
 ##
 ##  for emacs

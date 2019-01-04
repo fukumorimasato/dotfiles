@@ -463,22 +463,6 @@
   (smooth-scroll-mode)
   )
 
-;;;
-;;;  flycheck: syntacks check.
-;;;
-(use-package flycheck
-  :diminish ""
-  :init
-  (el-get-bundle flycheck)
-  (el-get-bundle yasuyk/helm-flycheck)
-  (add-hook 'after-init-hook #'global-flycheck-mode)  
-  :bind
-  ("C-c C-n" . flycheck-next-errors)
-  ("C-c C-p" . flycheck-previous-errors)
-  ("C-c C-l" . flycheck-list-errors)
-  ("C-c C-c" . helm-mode-flycheck-compile)
-  ("C-c C-f" . helm-flycheck)
-  )
 
 ;;;
 ;;;  neotree: Display directory tree.

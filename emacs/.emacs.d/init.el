@@ -94,21 +94,16 @@
 ;;    (set-terminal-parameter nil 'background-mode 'light)
 ;;    (set-frame-parameter nil 'background-mode 'light)
   )
-
-(use-package monokai-theme
-  :init
-  (el-get-bundle monokai-theme)
-  )
-
-(use-package sublime-themes
-  :init
-  (el-get-bundle sublime-themes)
-  :no-require t
-  )
+(use-package monokai-theme :init (el-get-bundle monokai-theme))
+(use-package sublime-themes :init (el-get-bundle sublime-themes) :no-require t)
+(use-package atom-dark-theme :init (el-get-bundle atom-dark-theme))
+(use-package atom-one-dark-theme :init (el-get-bundle atom-one-dark-theme))
+(use-package zenburn-theme :init (el-get-bundle zenburn-theme))
 
 (defun my-theme-setup-hook ()
   (interactive)
-  (load-theme 'solarized t)
+  ;;  (load-theme 'solarized t)
+  (load-theme 'monokai t)
   )
 (my-theme-setup-hook)
 (add-hook 'tty-setup-hook 'my-theme-setup-hook)

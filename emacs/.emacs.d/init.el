@@ -399,12 +399,50 @@
   (add-hook 'company-mode-hook 'set-yas-as-company-backend)
   )
 
-(use-package py-autopep8
+;;;
+;;;  company-jedi
+;;;
+(use-package company-jedi
+  :init
+  (el-get-bundle elpa:jedi-core)
+  (el-get-bundle company-jedi :depends (company-mode))
+  :config
+  (defun my/python-mode-hook ()
+    (add-to-list 'company-backends 'company-jedi))
+  (add-hook 'python-mode-hook 'my/python-mode-hook)
+  )
+
+;;;
+;;;  flycheck: syntacks check.
+;;;
+(use-package flycheck
   :diminish ""
   :init
-  (el-get-bundle py-autopep8)
+  (el-get-bundle flycheck)
+  (el-get-bundle yasuyk/helm-flycheck)
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+  (remove-hook 'elpy-modules 'elpy-module-flymake)
+  (add-hook 'elpy-mode-hook 'flycheck-mode)  
+  :bind
+  ("C-c C-n" . flycheck-next-errors)
+  ("C-c C-p" . flycheck-previous-errors)
+  ("C-c C-l" . flycheck-list-errors)
+  ("C-c C-c" . helm-mode-flycheck-compile)
+  ("C-c C-f" . helm-flycheck)
+  )
+
+;;;
+;;;  elpy
+;;;  require: pip install ipython jedi flake8 autopep8 yapf
+;;;
+(use-package elpy
+  :init
+  (el-get-bundle elpy)
   :config
-  (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+  (elpy-enable)
+  (setq python-shell-interpreter "ipython"
+	python-shell-interpreter-args "-i --simple-prompt")
+  (setq elpy-rpc-backend "jedi")
   )
 
 ;;; https://github.com/naiquevin/sphinx-doc.el/tree/f39da2e6cae55d5d7c7ce887e69755b7529bcd67
@@ -730,13 +768,84 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
+ '(ansi-color-names-vector
+   ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
+ '(company-quickhelp-color-background "#4F4F4F")
+ '(company-quickhelp-color-foreground "#DCDCCC")
+ '(compilation-message-face (quote default))
  '(conda-anaconda-home "~/.pyenv/versions/anaconda3-5.1.0")
+ '(cua-global-mark-cursor-color "#2aa198")
+ '(cua-normal-cursor-color "#657b83")
+ '(cua-overwrite-cursor-color "#b58900")
+ '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
    (quote
     ("8db4b03b9ae654d4a57804286eb3e332725c84d7cdab38463cb6b97d5762ad26" default)))
+ '(fci-rule-color "#3C3D37")
+ '(highlight-changes-colors (quote ("#FD5FF0" "#AE81FF")))
+ '(highlight-symbol-colors
+   (--map
+    (solarized-color-blend it "#fdf6e3" 0.25)
+    (quote
+     ("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2"))))
+ '(highlight-symbol-foreground-color "#586e75")
+ '(highlight-tail-colors
+   (quote
+    (("#3C3D37" . 0)
+     ("#679A01" . 20)
+     ("#4BBEAE" . 30)
+     ("#1DB4D0" . 50)
+     ("#9A8F21" . 60)
+     ("#A75B00" . 70)
+     ("#F309DF" . 85)
+     ("#3C3D37" . 100))))
+ '(hl-bg-colors
+   (quote
+    ("#DEB542" "#F2804F" "#FF6E64" "#F771AC" "#9EA0E5" "#69B7F0" "#69CABF" "#B4C342")))
+ '(hl-fg-colors
+   (quote
+    ("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3")))
+ '(linum-format " %7i ")
+ '(magit-diff-use-overlays nil)
+ '(nrepl-message-colors
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (markdown-preview-mode helm el-get use-package-chords key-chord use-package)))
+    (atom-one-dark-theme sublime-themes markdown-preview-mode helm el-get use-package-chords key-chord use-package)))
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(pos-tip-background-color "#FFFACE")
+ '(pos-tip-foreground-color "#272822")
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))
+ '(term-default-bg-color "#fdf6e3")
+ '(term-default-fg-color "#657b83")
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#F92672")
+     (40 . "#CF4F1F")
+     (60 . "#C26C0F")
+     (80 . "#E6DB74")
+     (100 . "#AB8C00")
+     (120 . "#A18F00")
+     (140 . "#989200")
+     (160 . "#8E9500")
+     (180 . "#A6E22E")
+     (200 . "#729A1E")
+     (220 . "#609C3C")
+     (240 . "#4E9D5B")
+     (260 . "#3C9F79")
+     (280 . "#A1EFE4")
+     (300 . "#299BA6")
+     (320 . "#2896B5")
+     (340 . "#2790C3")
+     (360 . "#66D9EF"))))
+ '(vc-annotate-very-old-color nil)
+ '(weechat-color-list
+   (quote
+    (unspecified "#272822" "#3C3D37" "#F70057" "#F92672" "#86C30D" "#A6E22E" "#BEB244" "#E6DB74" "#40CAE4" "#66D9EF" "#FB35EA" "#FD5FF0" "#74DBCD" "#A1EFE4" "#F8F8F2" "#F8F8F0")))
  '(yas-trigger-key "TAB"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

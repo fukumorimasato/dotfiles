@@ -73,7 +73,7 @@
 (use-package use-package-chords :ensure t)
 
 ;;;
-;;; install el-get (--> detect Not Found error. Should execute git clone manually)
+;;; install el-get
 ;;;
 (add-to-list 'load-path (locate-user-emacs-file "el-get/el-get"))
 (unless (require 'el-get nil 'noerror)
@@ -86,7 +86,6 @@
 ;;;
 ;;;  color theme
 ;;;
-;;  adapt solarized
 (use-package solarized-theme
   :init
   (el-get-bundle color-theme-solarized)
@@ -265,9 +264,17 @@
   (helm-migemo-mode 1)
   )
 
-;;
-;; helm-projectile/projectile
-;;
+;;;
+;;; helm-themes
+;;;
+(use-package helm-themes
+  :init
+  (el-get-bundle helm-themes)
+  )
+
+;;;
+;;; helm-projectile/projectile
+;;;
 (use-package helm-projectile
   :diminish ""
   :init
@@ -394,6 +401,23 @@
   (add-hook 'company-mode-hook 'set-yas-as-company-backend)
   )
 
+(use-package py-autopep8
+  :diminish ""
+  :init
+  (el-get-bundle py-autopep8)
+  :config
+  (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+  )
+
+;;; https://github.com/naiquevin/sphinx-doc.el/tree/f39da2e6cae55d5d7c7ce887e69755b7529bcd67
+(use-package sphinx-doc
+  :diminish ""
+  :init
+  (el-get-bundle sphinx-doc)
+  :config
+  (add-hook 'python-mode-hook (lambda () (sphinx-doc-mode t)))
+  )
+
 ;;;
 ;;;  helm-pydoc
 ;;;
@@ -499,9 +523,6 @@
   ("M-g" . magit-status)
   )
 
-
-;;(el-get-bundle redguardtoo/eacl)
-
 ;;;
 ;;; rainbow delimiters
 ;;;
@@ -517,23 +538,6 @@
   :config
   (outline-minor-mode t)
   (outline-minor-mode nil)
-  )
-
-(use-package py-autopep8
-  :diminish ""
-  :init
-  (el-get-bundle py-autopep8)
-  :config
-  (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
-  )
-
-;;; https://github.com/naiquevin/sphinx-doc.el/tree/f39da2e6cae55d5d7c7ce887e69755b7529bcd67
-(use-package sphinx-doc
-  :diminish ""
-  :init
-  (el-get-bundle sphinx-doc)
-  :config
-  (add-hook 'python-mode-hook (lambda () (sphinx-doc-mode t)))
   )
 
 ;;;
@@ -587,9 +591,42 @@
   ("C-c a" . org-agenda)
   )
 
+;;;
+;;;  for markdown
+;;;  https://github.com/jrblevin/markdown-mode
+;;;  https://www.yokoweb.net/2017/01/08/emacs-markdown-mode/
+;;;  https://github.com/ancane/markdown-preview-mode
+;;;
+(use-package markdown-mode
+  :init
+  (el-get-bundle markdown-mode)
+  (setq markdown-command "multimarkdown")
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  )
+
+(use-package markdown-preview-mode
+  :init
+  (el-get-bundle markdown-preview-mode)
+  :config
+  (add-to-list 'markdown-preview-stylesheets "https://raw.githubusercontent.com/richleland/pygments-css/master/emacs.css")
+  )
+
+(use-package markdown-toc
+  :init
+  (el-get-bundle markdown-toc)
+  )
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 ;; Ctrl+hをbackspaceとして使用する
 ;; http://akisute3.hatenablog.com/entry/20120318/1332059326
-(keyboard-translate ?\C-h ?\C-?)
+;;(keyboard-translate ?\C-h ?\C-?)
+;; http://malkalech.com/emacs_c-h_backspace
+(define-key key-translation-map [?\C-h] [?\C-?])
 
 ;; referenced url: https://qiita.com/kakikubo/items/412715e378b03b79faff
 ;; shut up, emacs!
@@ -600,7 +637,7 @@
 
 (defun my-eshell-prompt ()
   "Eshell prompt setting."
-  " $ "
+  "[eshell]$ "
   )
 
 
@@ -617,11 +654,9 @@
 ;; reload setting
 (global-set-key [f12] 'eval-buffer)
 
-
 ;; turn on font-lock mode
 (when (fboundp 'global-font-lock-mode)
   (global-font-lock-mode t))
-
 
 ;; default to better frame titles
 (setq frame-title-format
@@ -637,12 +672,13 @@
 
 ;; goto-line
 (global-set-key "\C-x\C-g" 'goto-line)
-(put 'set-goal-column 'disabled nil)
 
+;; set-goal-columは邪魔なので無効化
+;; https://kb.iu.edu/d/abvd
+(put 'set-goal-column 'disabled t)
 
 ;; 対応する括弧を光らせる
 (show-paren-mode 1)
-
 
 ;; ウィンドウ内に収まらないときだけ、カッコ内も光らせる
 (setq show-paren-style 'mixed)
@@ -713,9 +749,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(conda-anaconda-home "~/.pyenv/versions/anaconda3-5.1.0")
+ '(custom-safe-themes
+   (quote
+    ("8db4b03b9ae654d4a57804286eb3e332725c84d7cdab38463cb6b97d5762ad26" default)))
  '(package-selected-packages
    (quote
-    (helm el-get use-package-chords key-chord use-package)))
+    (markdown-preview-mode helm el-get use-package-chords key-chord use-package)))
  '(yas-trigger-key "TAB"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

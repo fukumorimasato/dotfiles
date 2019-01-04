@@ -282,6 +282,7 @@
   :init
   (el-get-bundle helm-projectile)
   :config
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode)
   (helm-projectile-on)
   )

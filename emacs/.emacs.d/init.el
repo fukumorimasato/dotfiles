@@ -95,13 +95,15 @@
 ;;    (set-frame-parameter nil 'background-mode 'light)
   )
 
-(use-package prassee-theme
+(use-package monokai-theme
   :init
-  (el-get-bundle prassee-theme
-    :type git
-    :url "https://github.com/prassee/prassee-emacs-theme")
-  :config
-  (add-to-list 'custom-theme-load-path (locate-user-emacs-file "el-get/prassee-theme"))
+  (el-get-bundle monokai-theme)
+  )
+
+(use-package sublime-themes
+  :init
+  (el-get-bundle sublime-themes)
+  :no-require t
   )
 
 (defun my-theme-setup-hook ()

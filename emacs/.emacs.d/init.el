@@ -205,7 +205,8 @@
 ;; referenced url: https://github.com/tsu-nera/dotfiles/blob/master/.emacs.d/inits/20_text.org
 (use-package migemo
   :diminish ""
-  :ensure t
+  :init
+  (el-get-bundle migemo)
   :config
   (setq migemo-options '("-q" "--emacs"))
   (setq migemo-user-dictionary nil)

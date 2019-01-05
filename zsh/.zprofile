@@ -14,7 +14,6 @@ export LANG=ja_JP.UTF-8
 export LESSCHARSET=dos
 export LC_ALL=en_US.UTF-8
 
-
 export LESS="-g -i -M -R -S -W -z-4 -x4"
 
 export PATH=~/bin:$PATH

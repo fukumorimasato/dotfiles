@@ -117,6 +117,14 @@ function extract() {
 alias -s {gz,tgz,zip,lzh,bz2,tbz,Z,tar,arj,xz}=extract
 
 #
+#  for proxy
+#
+local PROXYFILE=$HOME/.config/zsh/.proxyrc
+if [ -e $PROXYFILE ]; then
+    source $PROXYFILE
+fi
+
+#
 #  zplug setting
 #
 source ~/.zplug/init.zsh
@@ -294,10 +302,6 @@ if [ -z $TMUX ]; then
 
     t
 fi
-
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
 
 #
 #  for anaconda

@@ -30,6 +30,21 @@ zle -N history-beginning-search-forward-end history-search-end
 autoload -Uz add-zsh-hock
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 
+##
+##  for emacs
+##
+# referenced url:
+#  https://qiita.com/regashia/items/6bd9de68d596f6469129
+#
+function estart() {
+  if ! emacsclient -e 0 > /dev/null 2>&1; then
+    emacs --daemon
+  fi
+}
+
+alias ekill='emacsclient -e "(kill-emacs)"'
+alias emacs='emacsclient -nw -a ""'
+
 #
 # setting for ls command
 #
@@ -41,6 +56,9 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 #
 #  aliases
 #
+
+# for less
+alias less="less --no-init --quit-if-one-screen --RAW-CONTROL-CHARS -g -j10"
 
 # for ls
 case ${OSTYPE} in
@@ -76,6 +94,7 @@ alias -g T='| tail'
 alias -g L='| less'
 alias -g F='| fzf'
 alias -g P='| peco'
+alias -g S='| sort'
 
 # for extract
 function extract() {
@@ -107,6 +126,9 @@ zplug "chrissicool/zsh-256color"
 zplug "Tarrasch/zsh-colors"
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug "ascii-soup/zsh-url-highlighter"
+
+# theme
+#zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
 
 # program
 #zplug "voronkovich/mysql.plugin.zsh"
@@ -242,13 +264,13 @@ zle -N diary
 #
 man() {
         env \
-                LESS_TERMCAP_mb=$(printf "\e[1;31m") \
-                LESS_TERMCAP_md=$(printf "\e[1;31m") \
+                LESS_TERMCAP_mb=$(printf "\e[38;5;206m") \
+                LESS_TERMCAP_md=$(printf "\e[38;5;206m") \
                 LESS_TERMCAP_me=$(printf "\e[0m") \
                 LESS_TERMCAP_se=$(printf "\e[0m") \
-                LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-                LESS_TERMCAP_ue=$(printf "\e[0m") \
-                LESS_TERMCAP_us=$(printf "\e[1;32m") \
+                LESS_TERMCAP_so=$(printf "\e[38;5;190m") \
+                LESS_TERMCAP_ue=$(printf "\e[38;5;012m") \
+                LESS_TERMCAP_us=$(printf "\e[38;5;012m") \
                 man "$@"
 }
 
@@ -280,23 +302,9 @@ eval "$(pyenv init -)"
 #
 #  for anaconda
 #
-alias cact="source $HOME/.pyenv/versions/anaconda3-4.4.0/bin/activate"
-alias cdeact="source $HOME/.pyenv/versions/anaconda3-4.4.0/bin/deactivate"
+alias cact="source $HOME/.pyenv/versions/anaconda3-5.1.0/bin/activate"
+alias cdeact="source $HOME/.pyenv/versions/anaconda3-5.1.0/bin/deactivate"
 
-##
-##  for emacs
-##
-# referenced url:
-#  https://qiita.com/regashia/items/6bd9de68d596f6469129
-
-function estart() {
-  if ! emacsclient -e 0 > /dev/null 2>&1; then
-    emacs --daemon
-  fi
-}
-
-alias ekill='emacsclient -e "(kill-emacs)"'
-alias emacs='emacsclient -nw -a ""'
 
 estart
 

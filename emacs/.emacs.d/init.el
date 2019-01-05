@@ -33,6 +33,9 @@
   (defconst user-doc-dir  (concat user-home-dir "/doc")))
 (defconst user-org-dir (concat user-doc-dir "/org"))
 
+(when (eq system-type 'darwin)
+  (setq ns-command-modifier (quote meta)))
+
 ;;;
 ;;;  proxy setting
 ;;;
@@ -46,7 +49,8 @@
 ;;;
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;;             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 ;;(add-to-list 'package-archives
 ;;             '("marmalade" . "http://marmalade-repo.org/packages/") t) ;; didn't work.
 (package-initialize)
@@ -69,7 +73,7 @@
 (use-package use-package-chords :ensure t)
 
 ;;;
-;;; install el-get (--> detect Not Found error. Should execute git clone manually)
+;;; install el-get
 ;;;
 (add-to-list 'load-path (locate-user-emacs-file "el-get/el-get"))
 (unless (require 'el-get nil 'noerror)
@@ -82,21 +86,27 @@
 ;;;
 ;;;  color theme
 ;;;
-;;  adapt solarized
 (use-package solarized-theme
   :init
   (el-get-bundle color-theme-solarized)
-  (defun my-theme-setup-hook ()
-    (interactive)
-;;    (set-terminal-parameter nil 'background-mode 'dark)
-;;    (set-frame-parameter nil 'background-mode 'dark)
-    (set-terminal-parameter nil 'background-mode 'light)
-    (set-frame-parameter nil 'background-mode 'light)
-    (load-theme 'solarized t)
-    )
-  (my-theme-setup-hook)
-  (add-hook 'tty-setup-hook 'my-theme-setup-hook)
+  (set-terminal-parameter nil 'background-mode 'dark)
+  (set-frame-parameter nil 'background-mode 'dark)
+;;    (set-terminal-parameter nil 'background-mode 'light)
+;;    (set-frame-parameter nil 'background-mode 'light)
   )
+(use-package monokai-theme :init (el-get-bundle monokai-theme))
+(use-package sublime-themes :init (el-get-bundle sublime-themes) :no-require t)
+(use-package atom-dark-theme :init (el-get-bundle atom-dark-theme))
+(use-package atom-one-dark-theme :init (el-get-bundle atom-one-dark-theme))
+(use-package zenburn-theme :init (el-get-bundle zenburn-theme))
+
+(defun my-theme-setup-hook ()
+  (interactive)
+  ;;  (load-theme 'solarized t)
+  (load-theme 'monokai t)
+  )
+(my-theme-setup-hook)
+(add-hook 'tty-setup-hook 'my-theme-setup-hook)
 
 ;;;
 ;;;  rainbow-mode
@@ -142,8 +152,10 @@
 				       (powerline-raw "%Z  " face1)
 				       (funcall separator-left face1 face2)
 				       (powerline-raw " %b   " face2)
+				       (funcall separator-left face2 face3)
 				       ))
-			    (rhs (list (powerline-vc face2)
+			    (rhs (list (funcall separator-right face3 face2)
+				       (powerline-vc face2)
 				       (funcall separator-right face2 face1)
 				       (powerline-raw " %p " face1)
 				       (funcall separator-right face1 face0)
@@ -207,9 +219,13 @@
     (setq migemo-command "cmigemo")
     (setq migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict"))
 
-  ;;  (when windows-p
-  ;;    (setq migemo-command "c:/app/cmigemo-default-win64/cmigemo.exe")
-  ;;    (setq migemo-dictionary "c:/app/cmigemo-default-win64/dict/utf-8/migemo-dict"))
+  (when machine-mac
+    (setq migemo-command "cmigemo")
+    (setq migemo-dictionary "/usr/local/Cellar/cmigemo/HEAD-5c014a8/share/migemo/utf-8/migemo-dict/usr/local/Cellar/cmigemo/HEAD-5c014a8/sha"))
+  
+;;  (when windows-p
+;;    (setq migemo-command "c:/app/cmigemo-default-win64/cmigemo.exe")
+;;    (setq migemo-dictionary "c:/app/cmigemo-default-win64/dict/utf-8/migemo-dict"))
   (migemo-init)
   )
 
@@ -242,16 +258,26 @@
   (setq helm-buffer-details-flag nil)
   (recentf-mode 1)
   (helm-mode 1)
+  (helm-migemo-mode 1)
   )
 
-;;
-;; helm-projectile/projectile
-;;
+;;;
+;;; helm-themes
+;;;
+(use-package helm-themes
+  :init
+  (el-get-bundle helm-themes)
+  )
+
+;;;
+;;; helm-projectile/projectile
+;;;
 (use-package helm-projectile
   :diminish ""
   :init
   (el-get-bundle helm-projectile)
   :config
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode)
   (helm-projectile-on)
   )
@@ -331,24 +357,6 @@
   (yas-global-mode 1)  ;; enable yasnippet
   )
 
-
-;;;
-;;;  conda
-;;;
-;; https://github.com/necaris/conda.el
-(use-package conda
-  :diminish ""
-  :init
-  (el-get-bundle necaris/conda
-    :type git
-    :url "https://github.com/necaris/conda.el"
-    :depends (pythonic virtualenvwrapper))
-  (custom-set-variables
-   '(conda-anaconda-home "~/.pyenv/versions/anaconda3-5.1.0"))
-  (conda-env-autoactivate-mode t)
-  )
-
-
 ;;;
 ;;;  company
 ;;;
@@ -394,42 +402,56 @@
 ;;;
 ;;;  company-jedi
 ;;;
-;; referenced url:
-;;  http://tkf.github.io/emacs-jedi/latest/
-;;  https://github.com/syohex/emacs-company-jedi
-;;  https://github.com/syohex/emacs-company-jedi/wiki
-;;
 (use-package company-jedi
-  :if (fboundp 'company-mode)
-  :diminish ""
   :init
-  (el-get-bundle company-jedi)
-;;  (setq jedi:environment-virtualenv (list (expand-file-name (locate-user-emacs-file ".python-environments/"))))
-  (setq jedi:server-args
-	'("--sys-path" "~/.pyenv/versions/anaconda3-5.1.0/lib/python3.6"
-	  "--sys-path" "~/.pyenv/versions/anaconda3-5.1.0/lib/python3.6/lib-dynload"
-	  "--sys-path" "~/.pyenv/versions/anaconda3-5.1.0/lib/python3.6/site-packages"
-	  ;; ... and more! ...
-	  ))
-  (defun my/company-jedi-mode-hook ()
+  (el-get-bundle elpa:jedi-core)
+  (el-get-bundle company-jedi :depends (company-mode))
+  :config
+  (defun my/python-mode-hook ()
     (add-to-list 'company-backends 'company-jedi))
-  (add-hook 'python-mode-hook 'my/company-jedi-mode-hook)
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (setq jedi:complete-on-dot t)
-  (setq jedi:use-shortcuts t)
+  (add-hook 'python-mode-hook 'my/python-mode-hook)
   )
 
-
-(use-package company-anaconda
-  :disabled t
+;;;
+;;;  flycheck: syntacks check.
+;;;
+(use-package flycheck
+  :diminish ""
   :init
-  (el-get-bundle company-anaconda :depends (anaconda-mode))
-  (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)  
-  (defun my/company-anaconda-mode-hook ()
-    (add-to-list 'company-backends 'company-anaconda))
-  (add-hook 'python-mode-hook 'my/company-anaconda-mode-hook)
-;;  (add-to-list 'company-backends '(company-anaconda :with company-capf))
+  (el-get-bundle flycheck)
+  (el-get-bundle yasuyk/helm-flycheck)
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+  (remove-hook 'elpy-modules 'elpy-module-flymake)
+  (add-hook 'elpy-mode-hook 'flycheck-mode)  
+  :bind
+  ("C-c C-n" . flycheck-next-errors)
+  ("C-c C-p" . flycheck-previous-errors)
+  ("C-c C-l" . flycheck-list-errors)
+  ("C-c C-c" . helm-mode-flycheck-compile)
+  ("C-c C-f" . helm-flycheck)
+  )
+
+;;;
+;;;  elpy
+;;;  require: pip install ipython jedi flake8 autopep8 yapf
+;;;
+(use-package elpy
+  :init
+  (el-get-bundle elpy)
+  :config
+  (elpy-enable)
+  (setq python-shell-interpreter "ipython"
+	python-shell-interpreter-args "-i --simple-prompt")
+  (setq elpy-rpc-backend "jedi")
+  )
+
+;;; https://github.com/naiquevin/sphinx-doc.el/tree/f39da2e6cae55d5d7c7ce887e69755b7529bcd67
+(use-package sphinx-doc
+  :diminish ""
+  :init
+  (el-get-bundle sphinx-doc)
+  :config
+  (add-hook 'python-mode-hook (lambda () (sphinx-doc-mode t)))
   )
 
 ;;;
@@ -479,22 +501,6 @@
   (smooth-scroll-mode)
   )
 
-;;;
-;;;  flycheck: syntacks check.
-;;;
-(use-package flycheck
-  :diminish ""
-  :init
-  (el-get-bundle flycheck)
-  (el-get-bundle yasuyk/helm-flycheck)
-  (add-hook 'after-init-hook #'global-flycheck-mode)  
-  :bind
-  ("C-c C-n" . flycheck-next-errors)
-  ("C-c C-p" . flycheck-previous-errors)
-  ("C-c C-l" . flycheck-list-errors)
-  ("C-c C-c" . helm-mode-flycheck-compile)
-  ("C-c C-f" . helm-flycheck)
-  )
 
 ;;;
 ;;;  neotree: Display directory tree.
@@ -534,11 +540,8 @@
   :init
   (el-get-bundle magit)
   :bind
-  ("C-c C-g" . magit-status)
+  ("M-g" . magit-status)
   )
-
-
-;;(el-get-bundle redguardtoo/eacl)
 
 ;;;
 ;;; rainbow delimiters
@@ -555,23 +558,6 @@
   :config
   (outline-minor-mode t)
   (outline-minor-mode nil)
-  )
-
-(use-package py-autopep8
-  :diminish ""
-  :init
-  (el-get-bundle py-autopep8)
-  :config
-  (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
-  )
-
-;;; https://github.com/naiquevin/sphinx-doc.el/tree/f39da2e6cae55d5d7c7ce887e69755b7529bcd67
-(use-package sphinx-doc
-  :diminish ""
-  :init
-  (el-get-bundle sphinx-doc)
-  :config
-  (add-hook 'python-mode-hook (lambda () (sphinx-doc-mode t)))
   )
 
 ;;;
@@ -625,6 +611,43 @@
   ("C-c a" . org-agenda)
   )
 
+;;;
+;;;  for markdown
+;;;  https://github.com/jrblevin/markdown-mode
+;;;  https://www.yokoweb.net/2017/01/08/emacs-markdown-mode/
+;;;  https://github.com/ancane/markdown-preview-mode
+;;;
+(use-package markdown-mode
+  :init
+  (el-get-bundle markdown-mode)
+  (setq markdown-command "multimarkdown")
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  )
+
+(use-package markdown-preview-mode
+  :init
+  (el-get-bundle markdown-preview-mode)
+  :config
+  (add-to-list 'markdown-preview-stylesheets "https://raw.githubusercontent.com/richleland/pygments-css/master/emacs.css")
+  )
+
+(use-package markdown-toc
+  :init
+  (el-get-bundle markdown-toc)
+  )
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; Ctrl+hをbackspaceとして使用する
+;; http://akisute3.hatenablog.com/entry/20120318/1332059326
+;;(keyboard-translate ?\C-h ?\C-?)
+;; http://malkalech.com/emacs_c-h_backspace
+(define-key key-translation-map [?\C-h] [?\C-?])
+
 ;; referenced url: https://qiita.com/kakikubo/items/412715e378b03b79faff
 ;; shut up, emacs!
 (setq display-warning-minimum-level :error)
@@ -634,7 +657,7 @@
 
 (defun my-eshell-prompt ()
   "Eshell prompt setting."
-  " $ "
+  "[eshell]$ "
   )
 
 
@@ -651,11 +674,9 @@
 ;; reload setting
 (global-set-key [f12] 'eval-buffer)
 
-
 ;; turn on font-lock mode
 (when (fboundp 'global-font-lock-mode)
   (global-font-lock-mode t))
-
 
 ;; default to better frame titles
 (setq frame-title-format
@@ -671,17 +692,18 @@
 
 ;; goto-line
 (global-set-key "\C-x\C-g" 'goto-line)
-(put 'set-goal-column 'disabled nil)
 
+;; set-goal-columは邪魔なので無効化
+;; https://kb.iu.edu/d/abvd
+(put 'set-goal-column 'disabled t)
 
 ;; 対応する括弧を光らせる
 (show-paren-mode 1)
 
-
 ;; ウィンドウ内に収まらないときだけ、カッコ内も光らせる
 (setq show-paren-style 'mixed)
-(set-face-background 'show-paren-match-face "grey")
-(set-face-foreground 'show-paren-match-face "black")
+(set-face-background 'show-paren-match "grey")
+(set-face-foreground 'show-paren-match "black")
 
 ;; 列数を表示する
 (column-number-mode t)
@@ -741,3 +763,93 @@
                (message "Quit")
                (throw 'end-flag t)))))))
 (global-set-key (kbd "C-c w") 'window-resizer)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
+ '(ansi-color-names-vector
+   ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
+ '(company-quickhelp-color-background "#4F4F4F")
+ '(company-quickhelp-color-foreground "#DCDCCC")
+ '(compilation-message-face (quote default))
+ '(conda-anaconda-home "~/.pyenv/versions/anaconda3-5.1.0")
+ '(cua-global-mark-cursor-color "#2aa198")
+ '(cua-normal-cursor-color "#657b83")
+ '(cua-overwrite-cursor-color "#b58900")
+ '(cua-read-only-cursor-color "#859900")
+ '(custom-safe-themes
+   (quote
+    ("8db4b03b9ae654d4a57804286eb3e332725c84d7cdab38463cb6b97d5762ad26" default)))
+ '(fci-rule-color "#3C3D37")
+ '(highlight-changes-colors (quote ("#FD5FF0" "#AE81FF")))
+ '(highlight-symbol-colors
+   (--map
+    (solarized-color-blend it "#fdf6e3" 0.25)
+    (quote
+     ("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2"))))
+ '(highlight-symbol-foreground-color "#586e75")
+ '(highlight-tail-colors
+   (quote
+    (("#3C3D37" . 0)
+     ("#679A01" . 20)
+     ("#4BBEAE" . 30)
+     ("#1DB4D0" . 50)
+     ("#9A8F21" . 60)
+     ("#A75B00" . 70)
+     ("#F309DF" . 85)
+     ("#3C3D37" . 100))))
+ '(hl-bg-colors
+   (quote
+    ("#DEB542" "#F2804F" "#FF6E64" "#F771AC" "#9EA0E5" "#69B7F0" "#69CABF" "#B4C342")))
+ '(hl-fg-colors
+   (quote
+    ("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3")))
+ '(linum-format " %7i ")
+ '(magit-diff-use-overlays nil)
+ '(nrepl-message-colors
+   (quote
+    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+ '(package-selected-packages
+   (quote
+    (atom-one-dark-theme sublime-themes markdown-preview-mode helm el-get use-package-chords key-chord use-package)))
+ '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+ '(pos-tip-background-color "#FFFACE")
+ '(pos-tip-foreground-color "#272822")
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))
+ '(term-default-bg-color "#fdf6e3")
+ '(term-default-fg-color "#657b83")
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#F92672")
+     (40 . "#CF4F1F")
+     (60 . "#C26C0F")
+     (80 . "#E6DB74")
+     (100 . "#AB8C00")
+     (120 . "#A18F00")
+     (140 . "#989200")
+     (160 . "#8E9500")
+     (180 . "#A6E22E")
+     (200 . "#729A1E")
+     (220 . "#609C3C")
+     (240 . "#4E9D5B")
+     (260 . "#3C9F79")
+     (280 . "#A1EFE4")
+     (300 . "#299BA6")
+     (320 . "#2896B5")
+     (340 . "#2790C3")
+     (360 . "#66D9EF"))))
+ '(vc-annotate-very-old-color nil)
+ '(weechat-color-list
+   (quote
+    (unspecified "#272822" "#3C3D37" "#F70057" "#F92672" "#86C30D" "#A6E22E" "#BEB244" "#E6DB74" "#40CAE4" "#66D9EF" "#FB35EA" "#FD5FF0" "#74DBCD" "#A1EFE4" "#F8F8F2" "#F8F8F0")))
+ '(yas-trigger-key "TAB"))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

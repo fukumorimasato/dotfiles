@@ -14,11 +14,19 @@ export LANG=ja_JP.UTF-8
 export LESSCHARSET=dos
 export LC_ALL=en_US.UTF-8
 
+<<<<<<< HEAD
 export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/opt/tools/
 export PATH=~/bin/:$PATH
 
 export LESS="-g -i -M -R -S -W -z-4 -x4"
+=======
+export PATH=~/bin:$PATH
+export PATH=/opt/tools:$PATH
+export PATH=/usr/local/sbin:$PATH
+export PATH=/usr/local/bin:$PATH
+
+>>>>>>> origin/master
 
 # for fzf
 export FZF_DEFAULT_OPTS="--ansi --reverse --select-1 --exit-0"

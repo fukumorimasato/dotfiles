@@ -57,8 +57,13 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 #  aliases
 #
 
+<<<<<<< HEAD
 # for less
 alias less="less --no-init --quit-if-one-screen --RAW-CONTROL-CHARS -g -j10"
+=======
+# for validate local aliases when execute sudo cmd
+alias sudo="sudo "
+>>>>>>> origin/master
 
 # for ls
 case ${OSTYPE} in
@@ -93,8 +98,13 @@ alias gdc="git diff --cached"
 alias -g T='| tail'
 alias -g L='| less'
 alias -g F='| fzf'
+<<<<<<< HEAD
 alias -g P='| peco'
 alias -g S='| sort'
+=======
+alias -g S='| sort'
+alias -g P='| sort |peco'
+>>>>>>> origin/master
 
 # for extract
 function extract() {
@@ -293,6 +303,7 @@ if [ -z $TMUX ]; then
     t
 fi
 
+<<<<<<< HEAD
 
 
 export PYENV_ROOT="$HOME/.pyenv"
@@ -304,6 +315,19 @@ eval "$(pyenv init -)"
 #
 alias cact="source $HOME/.pyenv/versions/anaconda3-5.1.0/bin/activate"
 alias cdeact="source $HOME/.pyenv/versions/anaconda3-5.1.0/bin/deactivate"
+=======
+if [ -x "$(which pyenv)" ]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
+
+##
+##  for emacs
+##
+# referenced url:
+#  https://qiita.com/regashia/items/6bd9de68d596f6469129
+>>>>>>> origin/master
 
 
 estart

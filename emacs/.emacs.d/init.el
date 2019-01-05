@@ -77,9 +77,8 @@
 (add-to-list 'load-path (locate-user-emacs-file "el-get/el-get"))
 (unless (require 'el-get nil 'noerror)
   (package-install 'el-get)
-  (require 'el-get))
-
-(el-get 'sync)
+  (require 'el-get)
+  (el-get-elpa-build-local-recipes))
 
 ;;;
 ;;;  color theme
@@ -403,7 +402,7 @@
 ;;;
 (use-package company-jedi
   :init
-  (el-get-bundle elpa:jedi-core)
+  (el-get-bundle jedi-core)
   (el-get-bundle company-jedi :depends (company-mode))
   :config
   (defun my/python-mode-hook ()
@@ -816,7 +815,7 @@
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (atom-one-dark-theme sublime-themes markdown-preview-mode helm el-get use-package-chords key-chord use-package)))
+    (zenburn-theme atom-one-dark-theme sublime-themes markdown-preview-mode helm el-get use-package-chords key-chord use-package)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")

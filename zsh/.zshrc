@@ -304,10 +304,8 @@ if [ -z $TMUX ]; then
 fi
 
 #
-#  for anaconda
+#  for pyenv
 #
-alias cact="source $HOME/.pyenv/versions/anaconda3-5.1.0/bin/activate"
-alias cdeact="source $HOME/.pyenv/versions/anaconda3-5.1.0/bin/deactivate"
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 if [ -x "$(which pyenv)" ]; then

@@ -420,7 +420,7 @@
   (el-get-bundle yasuyk/helm-flycheck)
   (add-hook 'after-init-hook #'global-flycheck-mode)
   (remove-hook 'elpy-modules 'elpy-module-flymake)
-  (add-hook 'elpy-mode-hook 'flycheck-mode)  
+  (add-hook 'elpy-mode-hook 'flycheck-mode)
   :bind
   ("C-c C-n" . flycheck-next-errors)
   ("C-c C-p" . flycheck-previous-errors)

@@ -637,6 +637,19 @@
   )
 
 
+;;;
+;;;  for reStructuredText
+;;;
+(use-package rst-mode
+  :init
+  (el-get-bundle rst-mode)
+  (setq frame-background-mode 'dark)
+  :mode (("\\.rst\\'" . rst-mode)
+         ("\\.rest\\'" . rst-mode))
+  )
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 

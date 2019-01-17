@@ -174,6 +174,14 @@ fi
 # Then, source plugins and add commands to $PATH
 zplug load --verbose
 
+
+case ${OSTYPE} in
+    darwin*)
+	fpath=(/usr/local/share/zsh-completions $fpath)
+	;;
+esac
+
+
 function available () {
     local x candidates
     candidates="$1:"

@@ -300,7 +300,7 @@ fi
 ##
 # リポジトリにcd
 function peco-repo-list () {
-  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+  local selected_dir=$(ghq list -p | sort | peco --query "$LBUFFER")
   if [ -n "$selected_dir" ]; then
     BUFFER="cd ${selected_dir}"
     zle accept-line
@@ -312,11 +312,41 @@ bindkey '^[' peco-repo-list
 
 # リポジトリをブラウザで開く
 function peco-git-browse () {
-    github_repo=$(ghq list | peco)
+    github_repo=$(ghq list | sort | peco)
     GITHUB_HOST=$(echo ${github_repo} | cut -d "/" -f 1) hub browse $(echo ${github_repo} | cut -d "/" -f 2,3)
 }
 zle -N peco-git-browse
 bindkey '^]' peco-git-browse
+
+# el-getで取得したossにcd
+function peco-el-get-list () {
+    local elget_root=$HOME/.emacs.d/el-get
+    local selected=$(find .emacs.d/el-get -depth 1 -type d | sort |peco)
+    
+    if [ -n "$selected" ]; then
+	BUFFER="cd $selected"
+	zle accept-line
+    fi
+    zle clear-screen    
+}
+zle -N peco-el-get-list
+bindkey '^x^[' peco-el-get-list
+
+# el-getで取得したossのrepoをbrose
+function peco-el-get-browse () {
+    local elget_root=$HOME/.emacs.d/el-get
+    local selected=$(find .emacs.d/el-get -depth 1 -type d  | xargs -I{} sh -c "cd {} && git remote -v \
+    | cut -d ' ' -f 1 | cut -d '/' -f 4,5 | sed 's/\.git//' | head -n 1&& cd .." | sort |peco)
+    
+    if [ -n "$selected" ]; then
+	BUFFER="hub browse $selected"
+	zle accept-line
+    fi
+    zle clear-screen    
+}
+zle -N peco-el-get-browse
+bindkey '^x^]' peco-el-get-browse
+
 
 ##
 ##  for emacs

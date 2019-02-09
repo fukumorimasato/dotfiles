@@ -245,38 +245,6 @@ if [ -x "`which ag`" ]; then
     alias fsemcs="file-serch-emacs"
 fi
 
-function diary() {
-
-    dhome="$HOME/diary"
-    year=$(date +"%Y")
-    month=$(date +"%m")
-    day=$(date +"%d")
-    
-    ddir="${dhome}/${year}/${month}/${day}"
-    dfile="${year}${month}${day}_$(whoami).diary"
-
-    if [ ! -d $ddir ]; then
-	mkdir -p $ddir
-    fi
-
-    if [ ! -e $ddir/$dfile ]; then
-	echo -e "#=============================================" >> $ddir/$dfile
-	echo -e "# data   : $(date +\"%Y%m%d\")                " >> $ddir/$dfile
-	echo -e "# author : $(whoami)                          " >> $ddir/$dfile
-	echo -e "#=============================================" >> $ddir/$dfile
-	echo -e "                                              " >> $ddir/$dfile
-	echo -e "                                              " >> $ddir/$dfile
-	echo -e "                                              " >> $ddir/$dfile
-	echo -e "#=============================================" >> $ddir/$dfile
-	echo -e "# End Of File                                 " >> $ddir/$dfile
-	echo -e "#=============================================" >> $ddir/$dfile
-    fi
-
-    emacs $ddir/$dfile
-
-}
-zle -N diary
-
 #
 #  colered man page
 #
@@ -318,6 +286,12 @@ export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 if [ -x "$(which pyenv)" ]; then
     eval "$(pyenv init -)"
+fi
+
+# for go lang
+if [ -x "`which go`" ]; then
+  export GOPATH=$HOME/.go
+  export PATH="$GOPATH/bin:$PATH"
 fi
 
 ##

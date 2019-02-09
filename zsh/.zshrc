@@ -347,6 +347,31 @@ function peco-el-get-browse () {
 zle -N peco-el-get-browse
 bindkey '^x^]' peco-el-get-browse
 
+# zplugで取得したossにcd
+function peco-zplug-list () {
+    local selected=$(find $HOME/.zplug/repos  -depth 1 -type d | sort |peco)
+    
+    if [ -n "$selected" ]; then
+	BUFFER="cd $selected"
+	zle accept-line
+    fi
+    zle clear-screen    
+}
+zle -N peco-zplug-list
+bindkey '^z^[' peco-zplug-list
+
+# zplugで取得したossのrepoをbrose
+function peco-zplug-browse () {
+    local selected=$(zplug list | cut -d ' ' -f 1 P)
+    
+    if [ -n "$selected" ]; then
+	BUFFER="hub browse $selected"
+	zle accept-line
+    fi
+    zle clear-screen    
+}
+zle -N peco-zplug-browse
+bindkey '^z^]' peco-zplug-browse
 
 ##
 ##  for emacs

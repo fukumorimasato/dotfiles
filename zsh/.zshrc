@@ -300,78 +300,51 @@ fi
 ##
 # リポジトリにcd
 function peco-repo-list () {
-  local selected_dir=$(ghq list -p | sort | peco --query "$LBUFFER")
-  if [ -n "$selected_dir" ]; then
-    BUFFER="cd ${selected_dir}"
-    zle accept-line
-  fi
-  zle clear-screen
+    local tmp_file=$(mktemp)
+    ## ghq
+    ghq list -p >> $tmp_file
+    ## el-get
+    find $HOME/.emacs.d/el-get -depth 1 -type d >> $tmp_file
+    ## zplug
+    find $HOME/.zplug/repos  -depth 1 -type d >> $tmp_file
+    
+    local selected_dir=$(cat $tmp_file | sort | peco --query "$LBUFFER")
+    
+    if [ -n "$selected_dir" ]; then
+	BUFFER="cd ${selected_dir}"
+	zle accept-line
+    fi
+    zle clear-screen
+
+    rm -f $tmp_file
 }
 zle -N peco-repo-list
 bindkey '^[' peco-repo-list
 
 # リポジトリをブラウザで開く
 function peco-git-browse () {
-    github_repo=$(ghq list | sort | peco)
-    GITHUB_HOST=$(echo ${github_repo} | cut -d "/" -f 1) hub browse $(echo ${github_repo} | cut -d "/" -f 2,3)
+    local tmp_file=$(mktemp)
+
+    ## ghq
+    ghq list | cut -d "/" -f 2,3 >> $tmp_file
+    ## el-get
+    find $HOME/.emacs.d/el-get -depth 1 -type d  | xargs -I{} sh -c "cd {} && git remote -v \
+        | cut -d ' ' -f 1 | cut -d '/' -f 4,5 | sed 's/\.git//' | head -n 1 >> $tmp_file && cd .."
+    ## zplug
+    zplug list | cut -d ' ' -f 1 >> $tmp_file
+    
+    local github_repo=$(cat $tmp_file | sort | peco)
+    
+    if [ -n "$github_repo" ]; then
+	BUFFER=$(hub browse $github_repo)
+	zle accept-line
+    fi
+    zle clear-screen
+
+    rm -f $tmp_file
 }
 zle -N peco-git-browse
 bindkey '^]' peco-git-browse
-
-# el-getで取得したossにcd
-function peco-el-get-list () {
-    local elget_root=$HOME/.emacs.d/el-get
-    local selected=$(find .emacs.d/el-get -depth 1 -type d | sort |peco)
-    
-    if [ -n "$selected" ]; then
-	BUFFER="cd $selected"
-	zle accept-line
-    fi
-    zle clear-screen    
-}
-zle -N peco-el-get-list
-bindkey '^x^[' peco-el-get-list
-
-# el-getで取得したossのrepoをbrose
-function peco-el-get-browse () {
-    local elget_root=$HOME/.emacs.d/el-get
-    local selected=$(find .emacs.d/el-get -depth 1 -type d  | xargs -I{} sh -c "cd {} && git remote -v \
-    | cut -d ' ' -f 1 | cut -d '/' -f 4,5 | sed 's/\.git//' | head -n 1&& cd .." | sort |peco)
-    
-    if [ -n "$selected" ]; then
-	BUFFER="hub browse $selected"
-	zle accept-line
-    fi
-    zle clear-screen    
-}
-zle -N peco-el-get-browse
-bindkey '^x^]' peco-el-get-browse
-
-# zplugで取得したossにcd
-function peco-zplug-list () {
-    local selected=$(find $HOME/.zplug/repos  -depth 1 -type d | sort |peco)
-    
-    if [ -n "$selected" ]; then
-	BUFFER="cd $selected"
-	zle accept-line
-    fi
-    zle clear-screen    
-}
-zle -N peco-zplug-list
-bindkey '^z^[' peco-zplug-list
-
-# zplugで取得したossのrepoをbrose
-function peco-zplug-browse () {
-    local selected=$(zplug list | cut -d ' ' -f 1 P)
-    
-    if [ -n "$selected" ]; then
-	BUFFER="hub browse $selected"
-	zle accept-line
-    fi
-    zle clear-screen    
-}
-zle -N peco-zplug-browse
-bindkey '^z^]' peco-zplug-browse
 
 ##
 ##  for emacs

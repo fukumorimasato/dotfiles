@@ -302,11 +302,29 @@ fi
 function peco-repo-list () {
     local tmp_file=$(mktemp)
     ## ghq
-    ghq list -p >> $tmp_file
+    if [ -x "`which ghq`" ]; then
+	ghq list -p >> $tmp_file
+	;
+    fi
     ## el-get
-    find $HOME/.emacs.d/el-get -depth 1 -type d >> $tmp_file
+    case ${OSTYPE} in
+	darwin*)
+	    find $HOME/.emacs.d/el-get -depth 1 -type d >> $tmp_file
+	    ;;
+	linux*)
+	    find $HOME/.emacs.d/el-get -maxdepth 1 -type d >> $tmp_file
+	    ;;
+    esac
+	
     ## zplug
-    find $HOME/.zplug/repos  -depth 1 -type d >> $tmp_file
+    case ${OSTYPE} in
+	darwin*)
+	    find $HOME/.zplug/repos  -depth 1 -type d >> $tmp_file
+	    ;;
+	linux*)
+	    find $HOME/.zplug/repos  -maxdepth 1 -type d >> $tmp_file
+	    ;;
+    esac
     
     local selected_dir=$(cat $tmp_file | sort | peco --query "$LBUFFER")
     
@@ -314,7 +332,6 @@ function peco-repo-list () {
 	BUFFER="cd ${selected_dir}"
 	zle accept-line
     fi
-    zle clear-screen
 
     rm -f $tmp_file
 }
@@ -326,10 +343,23 @@ function peco-git-browse () {
     local tmp_file=$(mktemp)
 
     ## ghq
-    ghq list | cut -d "/" -f 2,3 >> $tmp_file
+    if [ -x "`which ghq`" ]; then    
+	ghq list | cut -d "/" -f 2,3 >> $tmp_file
+	;
+    fi
     ## el-get
-    find $HOME/.emacs.d/el-get -depth 1 -type d  | xargs -I{} sh -c "cd {} && git remote -v \
-        | cut -d ' ' -f 1 | cut -d '/' -f 4,5 | sed 's/\.git//' | head -n 1 >> $tmp_file && cd .."
+    case ${OSTYPE} in
+	darwin*)
+	    find $HOME/.emacs.d/el-get -depth 1 -type d  | xargs -I{} sh -c "cd {} \
+	    && git remote -v | cut -d ' ' -f 1 | cut -d '/' -f 4,5 | sed 's/\.git//' \
+	    | head -n 1 >> $tmp_file && cd .."
+	    ;;
+	linux*)
+	    find $HOME/.emacs.d/el-get -maxdepth 1 -type d  | xargs -I{} sh -c "cd {} \
+	    && git remote -v | cut -d ' ' -f 1 | cut -d '/' -f 4,5 | sed 's/\.git//' \
+	    | head -n 1 >> $tmp_file && cd .."
+	    ;;
+    esac
     ## zplug
     zplug list | cut -d ' ' -f 1 >> $tmp_file
     
@@ -339,7 +369,6 @@ function peco-git-browse () {
 	BUFFER=$(hub browse $github_repo)
 	zle accept-line
     fi
-    zle clear-screen
 
     rm -f $tmp_file
 }

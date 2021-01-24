@@ -83,14 +83,6 @@ alias lla="ls -la"
 alias ...="cd ../../"
 alias ....="cd ../../../"
 
-# for git
-alias ga="git add -p"
-alias gcm="git commit"
-alias gs="git status"
-alias gf="git fetch"
-alias gd="git diff"
-alias gdc="git diff --cached"
-
 # for pipe
 alias -g T='| tail'
 alias -g L='| less'

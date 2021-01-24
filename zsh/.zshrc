@@ -130,10 +130,8 @@ zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug "ascii-soup/zsh-url-highlighter"
 
 # theme
-#zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
-
-# program
-#zplug "voronkovich/mysql.plugin.zsh"
+zplug romkatv/powerlevel10k, as:theme, depth:1
+#zplug "eendroroy/alien"
 
 # tools
 zplug "marzocchi/zsh-notify"

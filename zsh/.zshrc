@@ -153,8 +153,6 @@ zplug "mollifier/anyframe"
 zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
 zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
 
-# for inclimental search
-#zplug "zsh-users/zaw"
 
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then

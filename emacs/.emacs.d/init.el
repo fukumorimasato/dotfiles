@@ -199,6 +199,16 @@
   )
 
 ;;;
+;;; magit
+;;;
+(use-package magit
+  :init
+  (el-get-bundle magit :depends (dash magit-popup ghub graphql treepy with-editor))
+  :bind
+  ("M-g" . magit-status)
+  )
+
+;;;
 ;;; migemo
 ;;;
 ;; referenced url: https://github.com/tsu-nera/dotfiles/blob/master/.emacs.d/inits/20_text.org
@@ -529,16 +539,6 @@
 	 ("C-g" . symbol-overlay-remove-all)
 	 )
    )
-  )
-  
-;;;
-;;; magit
-;;;
-(use-package magit
-  :init
-  (el-get-bundle magit)
-  :bind
-  ("M-g" . magit-status)
   )
 
 ;;;

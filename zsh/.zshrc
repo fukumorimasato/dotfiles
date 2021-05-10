@@ -276,6 +276,11 @@ if [ -x "$(which pyenv)" ]; then
     eval "$(pyenv init -)"
 fi
 
+#
+#  for pyvirtualenv
+#
+eval "$(pyenv virtualenv-init -)"
+
 # for go lang
 if [ -x "`which go`" ]; then
   export GOPATH=$HOME/.go

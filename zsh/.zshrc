@@ -253,20 +253,6 @@ man() {
 #
 alias t="tmux a || tmux"
 
-# start tmux when zsh
-if [ -z $TMUX ]; then
-
-    DATE=$(date +%Y-%m-%d)
-    LOG_DIR=$HOME/logs/tmux/$DATE
-
-    if [ ! -d $LOG_DIR ]; then
-	mkdir -p $LOG_DIR
-	;
-    fi
-
-    t
-fi
-
 #
 #  for pyenv
 #
@@ -374,5 +360,19 @@ bindkey '^]' peco-git-browse
 # referenced url:
 #  https://qiita.com/regashia/items/6bd9de68d596f6469129
 estart
+
+# start tmux when zsh
+if [ -z $TMUX ]; then
+
+    DATE=$(date +%Y-%m-%d)
+    LOG_DIR=$HOME/logs/tmux/$DATE
+
+    if [ ! -d $LOG_DIR ]; then
+	mkdir -p $LOG_DIR
+	;
+    fi
+
+    t
+fi
 
 # .zshrc ends here

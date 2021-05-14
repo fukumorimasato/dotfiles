@@ -43,7 +43,7 @@ function estart() {
 }
 
 alias ekill='emacsclient -e "(kill-emacs)"'
-alias emacs='emacsclient -nw -a ""'
+alias ec='emacsclient -nw -a ""'
 
 #
 # setting for ls command
@@ -360,19 +360,8 @@ bindkey '^]' peco-git-browse
 # referenced url:
 #  https://qiita.com/regashia/items/6bd9de68d596f6469129
 estart
-
-# start tmux when zsh
-if [ -z $TMUX ]; then
-
-    DATE=$(date +%Y-%m-%d)
-    LOG_DIR=$HOME/logs/tmux/$DATE
-
-    if [ ! -d $LOG_DIR ]; then
-	mkdir -p $LOG_DIR
-	;
-    fi
-
-    t
-fi
-
+sudo service wsl-vpnkit start
 # .zshrc ends here
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

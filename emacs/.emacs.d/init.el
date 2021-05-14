@@ -45,6 +45,7 @@
 ;;;
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (package-initialize)
 
 ;;;
@@ -98,70 +99,9 @@
 ;;;
 ;;; powerline
 ;;;
-(use-package powerline
-  :init
-  (el-get-bundle powerline)
-  
-  ;; http://n8.hatenablog.com/entry/2012/03/21/172928
-  ;; https://qiita.com/itome0403/items/c0fba8186ee8910bf8ab
-
-  (defun powerline-my-theme ()
-    "Setup the my mode-line."
-    (interactive)
-    (setq-default mode-line-format
-		  '("%e"
-		    (:eval
-		     (let* ((active (powerline-selected-window-active))
-			    (mode-line (if active 'mode-line 'mode-line-inactive))
-			    (face0 (if active 'mode-line-color-active-0 'mode-line-color-inactive-0))
-			    (face1 (if active 'mode-line-color-active-1 'mode-line-color-inactive-1))
-			    (face2 (if active 'mode-line-color-active-2 'mode-line-color-inactive-2))
-			    (face3 (if active 'mode-line-color-active-3 'mode-line-color-inactive-3))
-			    (face4 (if active 'mode-line-color-active-4 'mode-line-color-inactive-4))
-			    (powerline-current-separator 'utf-8)
-			    (separator-left (intern (format "powerline-%s-%s"
-							    (powerline-current-separator)
-							    (car powerline-default-separator-dir))))
-			    (separator-right (intern (format "powerline-%s-%s"
-							     (powerline-current-separator)
-							     (cdr powerline-default-separator-dir))))
-			    (lhs (list (powerline-raw " %* %m  " face0)
-				       (funcall separator-left face0 face1)
-				       (powerline-raw "%Z  " face1)
-				       (funcall separator-left face1 face2)
-				       (powerline-raw " %b   " face2)
-				       (funcall separator-left face2 face3)
-				       ))
-			    (rhs (list (funcall separator-right face3 face2)
-				       (powerline-vc face2)
-				       (funcall separator-right face2 face1)
-				       (powerline-raw " %p " face1)
-				       (funcall separator-right face1 face0)
-				       (powerline-raw "    %4l:%3c " face0)
-				       (powerline-fill face0 0)
-				       )))
-		       (concat (powerline-render lhs)
-			       (powerline-fill face3 (powerline-width rhs))
-			       (powerline-render rhs)))))))
-    
-  (defun make/set-face (face-name bg-color fg-color  weight inherit)
-    (make-face face-name)
-    (set-face-attribute face-name nil
-			:foreground fg-color :background bg-color
-			:box nil :weight weight :inherit inherit))
-  
-  (make/set-face 'mode-line-color-active-0 "#ffffd7" "#5f5faf" 'bold 'mode-line)
-  (make/set-face 'mode-line-color-active-1 "#ffffd7" "#00afaf" 'bold 'mode-line)
-  (make/set-face 'mode-line-color-active-2 "#ffffd7" "#d33682" 'bold 'mode-line)
-  (make/set-face 'mode-line-color-active-3 "#ffffd7" "#585858" 'bold 'mode-line-inactive)
-  (make/set-face 'mode-line-color-active-4 "#ffffd7" "#93a1a1" 'bold 'mode-line)
-  (make/set-face 'mode-line-color-inactive-0 "#ffffd7" "#585858" 'bold 'mode-line-inactive)
-  (make/set-face 'mode-line-color-inactive-1 "#ffffd7" "#808080" 'bold 'mode-line-inactive)
-  (make/set-face 'mode-line-color-inactive-2 "#ffffd7" "#585858" 'bold 'mode-line-inactive)
-  (make/set-face 'mode-line-color-inactive-3 "#ffffd7" "#93a1a1" 'bold 'mode-line-inactive)
-  (make/set-face 'mode-line-color-inactive-4 "#ffffd7" "#585858" 'bold 'mode-line-inactive)
-  
-  (powerline-my-theme)
+(use-package powerline-evil
+  :config
+  (powerline-evil-center-color-theme)
   )
 
 ;;
@@ -325,7 +265,7 @@
 ;;;
 (use-package async
   :init
-  (el-get-bundle emacs-async)
+  (el-get-bundle async)
   )
 
 ;;;
@@ -435,6 +375,12 @@
 (use-package markdown-toc
   :init
   (el-get-bundle markdown-toc)
+  )
+
+(use-package nlinum
+  :config
+  (global-nlinum-mode t)
+  (setq nlinum-format "%5d ")
   )
 
 

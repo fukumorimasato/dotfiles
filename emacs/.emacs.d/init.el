@@ -124,8 +124,8 @@
 ;;;
 (use-package magit
   :init
-  ;;(el-get-bundle magit :depends (dash magit-popup ghub graphql treepy with-editor))
-  (el-get-bundle magit)
+  (el-get-bundle magit :depends (dash magit-popup ghub graphql treepy with-editor))
+;;  (el-get-bundle magit)
   :bind
   ("M-g" . magit-status)
   )
